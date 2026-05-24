@@ -3,3 +3,10 @@ node_modules/
 .DS_Store
 *.tar.gz
 Meshes/ag/ag_invisible.nif
+Meshes/ag/_*.nif
+Meshes/ag/*.backup.nif
+Meshes/ag/*.skinned_backup.nif
+Meshes/ag/*with_alpha*
+Meshes/ag/*without_alpha*
+tools/blender/__pycache__/
+tools/blender/*.blend1

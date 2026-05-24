@@ -1,0 +1,155 @@
+CREATURE vs PLAYABLE — Ancestor Ghost body port diff
+Blend: C:\meisen-haus\playable-ancestor-ghost\tools\blender\ancestor_ghost.blend
+
+========================================================================
+1. RIG: Bip01 (playable) vs Bip01.001 (creature)
+========================================================================
+Shared bones: 28
+Creature-only bones (34): Bip01 Calf.L, Bip01 Calf.R, Bip01 Finger02.L, Bip01 Finger02.R, Bip01 Finger12.L, Bip01 Finger12.R, Bip01 Finger22.L, Bip01 Finger22.R, Bip01 Finger3.L, Bip01 Finger3.R, Bip01 Finger31.L, Bip01 Finger31.R
+  ... and 22 more (tail, feet, extra finger chains)
+
+Hand/finger rest-pose delta (world space, same bone name on both rigs):
+  Bip01 Hand.R: 0.5548 units
+  Bip01 Finger01.R: 0.5523 units
+  Bip01 Finger11.R: 0.5863 units
+  Bip01 Finger1.R: 0.5464 units
+  Bip01 Finger21.R: 0.6124 units
+
+Creature finger naming vs Dunmer hand skin bones:
+  Creature weights: Hand + Finger01/02/11/12/21/22/31/32/41/42 (11 groups)
+  Dunmer Hand 0 skin: Finger1, Finger11, Finger2, Finger21 only (4 bones, NO Hand)
+  Dunmer also has Hand 1 + Hand 2 tris per side (not in ag_chest export)
+
+========================================================================
+2. MESH INVENTORY (blend file)
+========================================================================
+
+Creature robe (armature Bip01.001):
+  Tri robe front: 122 verts, 21 vgroups, modifier arm=Bip01.001
+  Tri robe back: 134 verts, 22 vgroups, modifier arm=Bip01.001
+
+Creature hands (armature Bip01.001):
+  Tri hand: 144 verts, 11 vgroups, modifier arm=Bip01.001
+  Tri hand01: 144 verts, 11 vgroups, modifier arm=Bip01.001
+
+Dunmer chest ref (armature Bip01):
+  Tri Chest: 217 verts, 12 vgroups, modifier arm=Bip01
+
+Dunmer hand ref (armature Bip01):
+  Tri Right Hand 0: 99 verts, 4 vgroups, modifier arm=Bip01
+  Tri Left Hand 0: 99 verts, 4 vgroups, modifier arm=Bip01
+
+========================================================================
+3. WEIGHT SYSTEM COMPARISON
+========================================================================
+
+RIGHT hand:
+  Creature Tri hand:
+    Bip01 Finger01.R (6 verts) -> Bip01 Finger11.R
+    Bip01 Finger02.R (12 verts) -> Bip01 Finger1.R
+    Bip01 Finger11.R (6 verts) -> Bip01 Finger11.R
+    Bip01 Finger12.R (12 verts) -> Bip01 Finger1.R
+    Bip01 Finger21.R (6 verts) -> Bip01 Finger21.R
+    Bip01 Finger22.R (12 verts) -> Bip01 Finger2.R
+    Bip01 Finger31.R (6 verts) -> Bip01 Finger21.R
+    Bip01 Finger32.R (12 verts) -> Bip01 Finger2.R
+    Bip01 Finger41.R (6 verts) -> Bip01 Finger21.R
+    Bip01 Finger42.R (12 verts) -> Bip01 Finger2.R
+    Bip01 Hand.R (54 verts) -> Bip01 Finger21.R
+  Dunmer Tri Right Hand 0:
+    Bip01 Finger1.R (13 verts)
+    Bip01 Finger11.R (13 verts)
+    Bip01 Finger2.R (13 verts)
+    Bip01 Finger21.R (60 verts)
+
+LEFT hand:
+  Creature Tri hand01:
+    Bip01 Finger01.L (6 verts) -> Bip01 Finger11.L
+    Bip01 Finger02.L (12 verts) -> Bip01 Finger1.L
+    Bip01 Finger11.L (6 verts) -> Bip01 Finger11.L
+    Bip01 Finger12.L (12 verts) -> Bip01 Finger1.L
+    Bip01 Finger21.L (6 verts) -> Bip01 Finger21.L
+    Bip01 Finger22.L (12 verts) -> Bip01 Finger2.L
+    Bip01 Finger31.L (6 verts) -> Bip01 Finger21.L
+    Bip01 Finger32.L (12 verts) -> Bip01 Finger2.L
+    Bip01 Finger41.L (6 verts) -> Bip01 Finger21.L
+    Bip01 Finger42.L (12 verts) -> Bip01 Finger2.L
+    Bip01 Hand.L (54 verts) -> Bip01 Finger21.L
+  Dunmer Tri Left Hand 0:
+    Bip01 Finger1.L (13 verts)
+    Bip01 Finger11.L (13 verts)
+    Bip01 Finger2.L (29 verts)
+    Bip01 Finger21.L (44 verts)
+
+========================================================================
+4. WORLD ALIGNMENT (before export)
+========================================================================
+  Tri hand centroid (0.0, -0.535, 0.326)
+  Tri Right Hand 0 centroid (-0.048, 0.009, 0.579)
+  delta (-0.049, 0.544, 0.253)
+  Tri hand01 centroid (0.017, 0.534, 0.328)
+  Tri Left Hand 0 centroid (0.094, -0.009, 0.587)
+  delta (0.077, -0.543, 0.258)
+
+========================================================================
+5. NIF BIND SPACE — vanilla Skins vs ag_chest.nif
+========================================================================
+
+Tri Chest:
+  vanilla: 284 verts, center (-1.41, -0.99, -6.18), span (28.47, 16.44, 38.81)
+    skin root Bip01, bones ['Bip01 Neck', 'Bip01 Spine2', 'Bip01 Head', 'Bip01 Spine1', 'Bip01 Spine', 'Bip01 R Clavicle', 'Bip01 R UpperArm', 'Bip01 L Clavicle', 'Bip01 L UpperArm', 'Bip01 Pelvis', 'Bip01 R Thigh', 'Bip01 L Thigh']
+  ag_chest: 324 verts, center (2.94, 0.8, 20.1), span (41.75, 65.18, 118.68)
+    skin root Bip01, bones ['Bip01 Spine1', 'Bip01 Spine', 'Bip01 Spine2', 'Bip01 L Thigh', 'Bip01 L UpperArm', 'Bip01 Pelvis', 'Bip01 R Thigh', 'Bip01 L Clavicle', 'Bip01 Neck', 'Bip01 R Clavicle', 'Bip01 R UpperArm', 'Bip01 Head']
+
+Tri Right Hand 0:
+  vanilla: 132 verts, center (-4.62, 1.16, 0.67), span (6.89, 6.12, 2.57)
+    skin root Bip01 R UpperArm, bones ['Bip01 R Finger1', 'Bip01 R Finger2', 'Bip01 R Finger21', 'Bip01 R Finger11']
+  ag_chest: 234 verts, center (-5.89, 0.37, 0.34), span (10.33, 9.19, 3.85)
+    skin root Bip01 R UpperArm, bones ['Bip01 R Finger1', 'Bip01 R Finger2', 'Bip01 R Finger21', 'Bip01 R Finger11']
+
+Tri Left Hand 0:
+  vanilla: 132 verts, center (-4.42, -0.76, 0.24), span (6.86, 6.1, 2.6)
+    skin root Bip01 L UpperArm, bones ['Bip01 L Finger1', 'Bip01 L Finger2', 'Bip01 L Finger21', 'Bip01 L Finger11']
+  ag_chest: 234 verts, center (-3.62, -1.42, -0.19), span (10.3, 9.15, 3.9)
+    skin root Bip01 L UpperArm, bones ['Bip01 L Finger1', 'Bip01 L Finger2', 'Bip01 L Finger21', 'Bip01 L Finger11']
+
+========================================================================
+6. WHY EACH PIPELINE BEHAVES THE WAY IT DOES
+========================================================================
+STRETCHED HANDS (creature weights on Bip01, early exports):
+  - Mesh WAS skinned; vertices followed bones at runtime.
+  - Creature finger bones (Finger02/12/22...) don't exist on Bip01 -> spikes to origin.
+  - Even after name remap, bind matrices differ (~0.55u on shared hand bones).
+  - Result: wrong pose but SKELETON-CONNECTED.
+
+CURRENT GRAFT (static mesh + copy vanilla NiSkinInstance + bbox-fit):
+  - _apply_modifiers BAKES Bip01.001 armature -> destroys 11 weight groups.
+  - Weights stripped; vanilla skin pasted with nearest-vertex on reshaped mesh.
+  - Vert positions forced into vanilla bbox (+ 1.5x scale) -> looks placed but
+    weight/bind relationship is wrong -> invisible, inside body, or rubbery.
+
+APPLY-ARMATURE TRAP:
+  _apply_modifiers() on creature hands collapses all 11 groups to 1 (Finger21).
+  Never apply the creature armature modifier when preserving weights.
+
+========================================================================
+7. RECOMMENDED FIX (hands + arms)
+========================================================================
+HANDS:
+  1. Duplicate Tri hand/hand01; REMOVE Bip01.001 armature mod (do not apply).
+  2. World-align to Dunmer Tri * Hand 0 reference.
+  3. Remap 11 creature groups -> 4 Dunmer finger bones (see HAND_BONE_REMAP).
+  4. Transform verts into Dunmer hand bind space (ref.matrix_world).
+  5. Export SKINNED on Bip01 — no NIF vertex graft.
+  6. Post-process: rename tris, texture, ensure skin root = UpperArm only.
+
+ARMS (hide Dunmer flesh, keep skeleton):
+  - Use full vanilla wrist/forearm/upperarm NIF copies with alpha=0
+    (tools/build_invisible_stubs.py). Do NOT collapse geometry to a point.
+  - ESP must point Wrist/Forearm/UpperArm at ag\ag_*.nif stubs.
+  - Alternative later: extend ghost robe mesh in chest NIF to cover arms.
+
+NOT RECOMMENDED:
+  - NIF skin graft with bbox-fit / centroid-fit on hand verts
+  - Applying creature armature before weight remap
+  - Pointing arm slots at vanilla Dunmer paths (visible flesh)
