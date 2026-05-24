@@ -1,0 +1,5 @@
+node_modules/
+*.omwaddon.bak
+.DS_Store
+*.tar.gz
+Meshes/ag/ag_invisible.nif

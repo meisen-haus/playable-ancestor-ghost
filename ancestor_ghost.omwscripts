@@ -1,0 +1,8 @@
+# Ancestor Ghost Race — OpenMW 0.51+ Lua mod
+
+# LOAD must be first: API version check runs at content-load time.
+LOAD: scripts/ancestor_ghost/content_register.lua
+
+GLOBAL: scripts/ancestor_ghost/global.lua
+
+PLAYER: scripts/ancestor_ghost/player.lua
