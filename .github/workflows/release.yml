@@ -1,4 +1,4 @@
-# Build ancestor_ghost.omwaddon and attach release assets when a release is published.
+# Build ancestor_ghost.omwaddon and publish one installable mod zip per release.
 name: Release build
 
 on:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag name for the zip filename (e.g. 0.2.0). Ignored when triggered by a published release.'
+        description: 'Tag name for the zip filename (e.g. v0.1.1). Ignored when triggered by a published release.'
         required: true
         default: 'manual'
 
@@ -45,28 +45,30 @@ jobs:
       - name: Package mod zip
         run: |
           VERSION="${{ steps.version.outputs.tag }}"
-          STAGING="dist/playable-ancestor-ghost"
+          MOD_DIR="ancestor-ghost"
+          STAGING="dist/${MOD_DIR}"
+          ZIP="dist/ancestor-ghost-${VERSION}.zip"
           mkdir -p "$STAGING"
           cp ancestor_ghost.omwscripts ancestor_ghost.omwaddon README.md PLAYERS.md CHANGELOG.md LICENSE "$STAGING/"
           cp -r scripts l10n Meshes Textures "$STAGING/"
+          echo "=== Mod folder contents ==="
+          find "$STAGING" -maxdepth 2 -type f | sort
+          test -f "$STAGING/ancestor_ghost.omwscripts"
+          test -f "$STAGING/ancestor_ghost.omwaddon"
           mkdir -p dist
-          (cd dist && zip -r "playable-ancestor-ghost-${VERSION}.zip" playable-ancestor-ghost)
-          ls -la dist/
-          test -f "dist/playable-ancestor-ghost-${VERSION}.zip"
+          (cd dist && zip -rq "ancestor-ghost-${VERSION}.zip" "$MOD_DIR")
+          unzip -l "$ZIP" | head -40
+          test -f "$ZIP"
 
-      - name: Upload release assets
+      - name: Upload release asset
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ancestor_ghost.omwaddon
-            dist/playable-ancestor-ghost-${{ steps.version.outputs.tag }}.zip
+          files: dist/ancestor-ghost-${{ steps.version.outputs.tag }}.zip
 
-      - name: Upload workflow artifacts (manual run)
+      - name: Upload workflow artifact (manual run)
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
-          name: playable-ancestor-ghost-${{ steps.version.outputs.tag }}
-          path: |
-            ancestor_ghost.omwaddon
-            dist/playable-ancestor-ghost-${{ steps.version.outputs.tag }}.zip
+          name: ancestor-ghost-${{ steps.version.outputs.tag }}
+          path: dist/ancestor-ghost-${{ steps.version.outputs.tag }}.zip
