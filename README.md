@@ -14,6 +14,7 @@ Racial effects from **Ghostly Nature** (constant ability):
 - Resist Normal Weapons 100%
 - Resist Frost 100%
 - Resist Poison 100%
+- Fortify Maximum Magicka 3× Intelligence (same mechanic as The Mage birthsign, but +2.0 multiplier like The Atronach instead of +0.5)
 
 ## Race traits
 
@@ -24,18 +25,21 @@ Racial effects from **Ghostly Nature** (constant ability):
 | Resist Normal Weapons | 100% |
 | Resist Frost | 100% |
 | Resist Poison | 100% |
-| **Starting spell** | Ghost Curse (touch) |
+| Fortify Maximum Magicka | 3× INT |
+| **Starting spell** | Ghost Curse (touch, **9** magicka) |
 | Ghost Curse effects | Drain Endurance 5 for 30s, Drain Fatigue 10 for 30s, Damage Health 1–10 |
 
-### Attribute bonuses
+### Starting attributes
+
+Values in the race record are **starting attributes** (same scheme as vanilla races), not +N bonuses on top of 40. Custom classes still add **+10** to each favored attribute at character creation.
 
 | Attribute | Value |
 |---|---|
 | Strength | 30 |
-| Intelligence | 65 |
-| Willpower | 30 |
+| Intelligence | 50 |
+| Willpower | 50 |
 | Agility | 50 |
-| Speed | 60 |
+| Speed | 50 |
 | Endurance | 20 |
 | Personality | 20 |
 | Luck | 40 |
@@ -44,10 +48,10 @@ Racial effects from **Ghostly Nature** (constant ability):
 
 | Skill | Bonus |
 |---|---|
-| Conjuration | +10 |
+| Destruction | +15 |
 | Mysticism | +10 |
-| Unarmored | +10 |
-| Hand-to-hand | +10 |
+| Alteration | +10 |
+| Conjuration | +10 |
 
 ### Equipment restriction
 

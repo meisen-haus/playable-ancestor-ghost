@@ -27,6 +27,7 @@ const FX = {
   DRAIN_ATTRIBUTE       : 17, // DrainAttribute
   DRAIN_FATIGUE         : 20, // DrainFatigue
   DAMAGE_HEALTH         : 23, // DamageHealth
+  FORTIFY_MAX_MAGICKA   : 84, // FortifyMaximumMagicka (M/10 adds to INT multiplier; 20 → 3× INT)
 };
 const ATTR = { ENDURANCE: 2 };
 
@@ -186,6 +187,7 @@ function buildGhostlyNatureSpell() {
     subrecord('ENAM', enam({ effectId: FX.RESIST_NORMAL_WEAPONS, duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,          duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,         duration: 0, magMin: 100, magMax: 100 })),
+    subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA,   duration: 0, magMin: 20,  magMax: 20  })),
   ]);
 }
 
@@ -196,7 +198,7 @@ function buildGhostCurseSpell() {
   return record('SPEL', [
     subrecord('NAME', zstring('ag_ghost_curse')),
     subrecord('FNAM', zstring('Ghost Curse')),
-    subrecord('SPDT', spdt(0, 0, 0x0001)),
+    subrecord('SPDT', spdt(0, 9, 0x0001)), // explicit cost (vanilla NPC spell is 40; 0 → auto-calc is much higher)
     subrecord('ENAM', enam({ effectId: FX.DRAIN_ATTRIBUTE, attributeId: ATTR.ENDURANCE, range: 1, duration: 30, magMin: 5,  magMax: 5  })),
     subrecord('ENAM', enam({ effectId: FX.DRAIN_FATIGUE,                                range: 1, duration: 30, magMin: 10, magMax: 10 })),
     subrecord('ENAM', enam({ effectId: FX.DAMAGE_HEALTH,                                range: 1, duration: 0,  magMin: 1,  magMax: 10 })),
@@ -262,8 +264,10 @@ function buildAllBodyRecords() {
 //
 // RADT layout (140 bytes):
 //   Skill bonuses : 7 × (int32 skillId + int32 bonus) = 56 bytes  [0..55]
-//   Male attrs    : 8 × int32 = 32 bytes                          [56..87]
-//   Female attrs  : 8 × int32 = 32 bytes                          [88..119]
+//   Attributes    : 16 × int32 interleaved by attribute (OpenMW    [56..119]
+//                   ESM::Race::RADTstruct::mAttributeValues):
+//                   Str♂, Str♀, Int♂, Int♀, Wil♂, Wil♀, Agi♂, Agi♀,
+//                   Spd♂, Spd♀, End♂, End♀, Per♂, Per♀, Lck♂, Lck♀
 //   Height male/female float: 8 bytes                             [120..127]
 //   Weight male/female float: 8 bytes                             [128..135]
 //   Flags int32: 4 bytes                                          [136..139]
@@ -273,9 +277,9 @@ function buildAllBodyRecords() {
 // NPCS, DESC. Body parts are separate BODY records whose FNAM subrecord
 // holds the race ID; OpenMW scans BODY records by race + BYDT part/gender.
 // ---------------------------------------------------------------------------
-const RACE_ATTRS = [30, 65, 30, 50, 60, 20, 20, 40];
+const RACE_ATTRS = [30, 50, 50, 50, 50, 20, 20, 40];
 const RACE_SKILLS = [
-  [11, 10], [12, 10], [7, 10], [26, 10],
+  [10, 15], [14, 10], [11, 10], [13, 10], // Destruction, Mysticism, Alteration, Conjuration
   [-1, 0], [-1, 0], [-1, 0],
 ];
 
@@ -286,12 +290,14 @@ function buildRaceRecord() {
     radt.writeInt32LE(skillId, o); o += 4;
     radt.writeInt32LE(bonus,   o); o += 4;
   }
-  for (const v of RACE_ATTRS) { radt.writeInt32LE(v, o); o += 4; }
-  for (const v of RACE_ATTRS) { radt.writeInt32LE(v, o); o += 4; }
+  for (const v of RACE_ATTRS) {
+    radt.writeInt32LE(v, o); o += 4; // male
+    radt.writeInt32LE(v, o); o += 4; // female (same targets for both)
+  }
   radt.writeFloatLE(1.0, o); o += 4;
   radt.writeFloatLE(1.0, o); o += 4;
-  radt.writeFloatLE(0.5, o); o += 4;
-  radt.writeFloatLE(0.5, o); o += 4;
+  radt.writeFloatLE(1.0, o); o += 4;
+  radt.writeFloatLE(1.0, o); o += 4;
   radt.writeInt32LE(0x01, o); // Playable only (not Beast — beast skeleton breaks Dunmer head preview)
 
   const subs = [

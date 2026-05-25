@@ -40,13 +40,17 @@ Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 2 SPEL + 1 RAC
 
 Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
+### RACE `ancestor_ghost` — RADT attributes
+
+`RACE_ATTRS` in `build_esp.mjs` are **starting attribute values** (Strength → Luck), same as vanilla races. In the binary `RADT` subrecord they must be written **interleaved male/female per attribute** (`Str♂`, `Str♀`, `Int♂`, `Int♀`, …), not as two blocks of eight — OpenMW indexes `mAttributeValues` that way (`ESM::Race::RADTstruct::getAttribute` in `components/esm3/loadrace.cpp`). Block layout scrambles stats in chargen.
+
 ### SPEL: `ag_ghostly_nature` (Ability)
 
-Chameleon 50, Resist Normal Weapons / Frost / Poison 100. ENAM uses OpenMW `sMagicEffectIds` indices (see `build_esp.mjs`).
+Chameleon 50, Resist Normal Weapons / Frost / Poison 100, Fortify Maximum Magicka 20 (3× INT; Mage sign uses 5 for 1.5×). ENAM uses OpenMW `sMagicEffectIds` indices (see `build_esp.mjs`).
 
 ### SPEL: `ag_ghost_curse` (touch spell)
 
-Drain Endurance 5, Drain Fatigue 10, Damage Health 1–10.
+Drain Endurance 5, Drain Fatigue 10, Damage Health 1–10. **Magicka cost 9** (playable tweak; vanilla NPC `Ghost Curse` is 40 — do not leave SPDT cost at 0 or OpenMW auto-calculates higher).
 
 ### BODY records (26 total)
 
