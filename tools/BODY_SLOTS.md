@@ -1,55 +1,41 @@
-# Body slots — what remains
+# Body slots — current shipping state
 
-Head export is done (`build_vanilla_head_nif.py`). For the visible ghost body, **torso + hands** are the main custom mesh work.
+All BODY records in `tools/build_esp.mjs` point at `Meshes/ag/` assets below.
 
-## Run the diff report
+| Slot | ESP path | Builder |
+|------|----------|---------|
+| Head | `ag\ag_head.nif` | `tools/blender/build_vanilla_head_nif.py` (morpher) |
+| Hair | `ag\ag_hair.nif` | `tools/build_invisible_stubs.py` |
+| Neck | `ag\ag_neck.nif` | `tools/build_invisible_stubs.py` |
+| Chest, Hand | `ag\ag_chest.nif` | `tools/blender/build_vanilla_chest_nif.py` (rigid Bip01 root) |
+| Groin | `ag\ag_groin.nif` | `tools/build_invisible_stubs.py` |
+| Wrist / Forearm / UpperArm | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` |
+| Foot / Ankle / Knee / UpperLeg | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` |
 
-```powershell
-& "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe" `
-  --background tools/blender/ancestor_ghost.blend `
-  --python tools/blender/diff_body_slots.py
+1st-person arms: `Meshes/Xbase_anim.1st.nif` via `tools/build_invisible_1st_person.py`.
 
-# optional file output
-& "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe" `
-  --background tools/blender/ancestor_ghost.blend `
-  --python tools/blender/diff_body_slots.py -- `
-  --out tools/reports/body_slot_diff.txt
-```
+## Full mesh rebuild
 
-## Status by slot
-
-| Slot | ESP today | Creature source in blend | Notes |
-|------|-----------|--------------------------|-------|
-| Head | `ag\ag_head.nif` | `ag_head_geo` | Done — morpher format |
-| Hair | invisible stub | — | Done |
-| **Chest** | Dunmer Skins | `Tri robe front`, `Tri robe back` | **TODO** → `ag_chest.nif` |
-| **Hand** | Dunmer Skins | `Tri hand`, `Tri hand01` | **TODO** — same NIF as chest |
-| Neck | Dunmer | — | No ghost mesh; keep or retexture |
-| Groin | Dunmer | — | Optional if robe doesn't cover |
-| Wrist / Forearm / UpperArm | vanilla Dunmer | Robe covers most of the arm; collapsed stubs caused distortion |
-| Legs | invisible stubs | — | Done |
-
-## Format difference (head vs body)
-
-| | Head | Chest + hands |
-|---|------|---------------|
-| Root | `B_N_Dark Elf_M_Head_01` style | `Bip01` |
-| Controller | `NiGeomMorpherController` | `NiSkinInstance` per tri |
-| Tri names | contains `Head` | `Tri Chest`, `Tri Left Hand 0`… |
-| Skeleton in file | none | full `Bip01` hierarchy |
-
-Body export should follow **Dunmer Skins.nif**, not the head morpher pipeline.
-
-## Chest + hands export
-
-Automated builder: `tools/blender/build_vanilla_chest_nif.py`
+From repo root (Blender 5.1+, Morrowind at `C:/Morrowind/Data Files`):
 
 ```powershell
-& "C:\Program Files\Blender Foundation\Blender 4.2\blender.exe" `
-  --background tools/blender/ancestor_ghost.blend `
-  --python tools/blender/build_vanilla_chest_nif.py
-
+blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_chest_nif.py
+blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_head_nif.py
+blender --background --python tools/build_invisible_stubs.py
+blender --background --python tools/build_invisible_1st_person.py
 node tools/build_esp.mjs
 ```
 
-Output: `Meshes/ag/ag_chest.nif` (Chest + Hand BODY slots). ESP points both slots at this path.
+## Dev diff report (optional)
+
+```powershell
+blender --background tools/blender/ancestor_ghost.blend --python tools/blender/diff_body_slots.py
+```
+
+## Head vs chest format
+
+| | Head | Chest + hands |
+|---|------|---------------|
+| Root | Part-named NiNode (no Bip01 skeleton) | `Bip01` |
+| Deformation | `NiGeomMorpherController` | Rigid `NiSkinInstance` (100% Bip01) |
+| Tri names | contains `Head` | `Tri Chest`, `Tri Right Hand 0`, … |

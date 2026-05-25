@@ -13,8 +13,7 @@ The automated builder lives at `tools/blender/build_vanilla_head_nif.py`.
 
 ## Prerequisites
 
-1. **Blender 4.2+** with [io_scene_mw](https://github.com/Greatness7/io_scene_mw) enabled  
-   (a copy is in `tools/downloads/io_scene_mw/` — install via *Edit → Preferences → Add-ons → Install*).
+1. **Blender 5.1+** — uses vendored `tools/downloads/io_scene_mw/` (see `.cursor/rules/vendored-tools.mdc`; do not install a separate copy for builds).
 2. **`tools/blender/ancestor_ghost.blend`** containing:
    - Joined ghost geometry as `ag_head_geo`
    - Dunmer reference mesh `Tri B_N_Dark Elf_M_Head_01` (import the vanilla head NIF once for alignment)
@@ -33,7 +32,7 @@ From the repo root:
 ```
 
 Output: `Meshes/ag/ag_head.nif`  
-Previous skinned export (if any) is saved to `Meshes/ag/ag_head.skinned_backup.nif`.
+Optional local backup (gitignored): `Meshes/ag/ag_head.skinned_backup.nif` on first rebuild.
 
 ## What the script does
 

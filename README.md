@@ -6,7 +6,7 @@ An OpenMW mod that adds the **Ancestor Ghost** as a fully playable race.
 
 The Dunmer believe that the spirits of the dead linger in the mortal world — the strongest among them endure as Ancestor Ghosts, bound to protect the tombs of their kin. This mod lets you play as one.
 
-Ancestor Ghosts are incorporeal undead. They **cannot equip weapons, armour, or clothing**; they fight with bare hands and **Ghost Curse** — the touch spell used by the creatures in Dunmer tombs. Visually they appear as a **semi-transparent Dunmer** (50% Chameleon) until custom ghost meshes are added; see [NIF_PRODUCTION.md](NIF_PRODUCTION.md).
+Ancestor Ghosts are incorporeal undead. They **cannot equip weapons, armour, or clothing**; they fight with bare hands and **Ghost Curse** — the touch spell used by the creatures in Dunmer tombs. Visually they use a **ghost head and robe** on a hidden Dunmer rig (Chameleon 50% for extra translucency). Mesh pipeline: [tools/BODY_SLOTS.md](tools/BODY_SLOTS.md).
 
 Racial effects from **Ghostly Nature** (constant ability):
 
@@ -83,7 +83,7 @@ node tools/build_esp.mjs
 
 ## Lore notes
 
-Based on the Ancestor Ghost creature in Dunmer tombs: resistances and Ghost Curse match vanilla creature behavior. The player model is a **placeholder** (Dunmer body + Chameleon), not the floating creature mesh (`xancestral_ghost.nif`).
+Based on the Ancestor Ghost creature in Dunmer tombs: resistances and Ghost Curse match vanilla creature behavior. The player uses **segmented biped BODY slots** (ghost head/robe + invisible flesh stubs), not the floating creature mesh (`xancestral_ghost.nif`).
 
 ## Requirements
 

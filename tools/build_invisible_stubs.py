@@ -3,9 +3,9 @@
 Build invisible BODY-slot stubs from vanilla Dunmer meshes.
 
 OpenMW ignores NiMaterialProperty.alpha on skin slots — use NiAlphaProperty
-(alpha test NEVER) so wrist/forearm/upperarm/neck do not render.
+(alpha test NEVER) so hidden flesh slots do not render.
 
-Output: Meshes/ag/ag_wrist.nif, ag_forearm.nif, ag_upperarm.nif, ag_neck.nif, ag_groin.nif
+Output: Meshes/ag/ag_{wrist,forearm,upperarm,neck,groin,foot,ankle,knee,upperleg,hair}.nif
 
 Run:
   blender --background --python tools/build_invisible_stubs.py
@@ -31,6 +31,11 @@ STUBS = (
     ("Meshes/b/B_N_Dark Elf_M_Upper Arm.NIF", "ag_upperarm.nif"),
     ("Meshes/b/B_N_Dark Elf_M_Neck.NIF", "ag_neck.nif"),
     ("Meshes/b/B_N_Dark Elf_M_Groin.NIF", "ag_groin.nif"),
+    ("Meshes/b/B_N_Dark Elf_M_Foot.NIF", "ag_foot.nif"),
+    ("Meshes/b/B_N_Dark Elf_M_Ankle.NIF", "ag_ankle.nif"),
+    ("Meshes/b/B_N_Dark Elf_M_Knee.NIF", "ag_knee.nif"),
+    ("Meshes/b/B_N_Dark Elf_M_Upper Leg.NIF", "ag_upperleg.nif"),
+    ("Meshes/b/B_N_Dark Elf_M_Hair_01.NIF", "ag_hair.nif"),
 )
 
 for path in (IO_SCENE_MW_LIB, IO_SCENE_MW):
@@ -87,7 +92,7 @@ def make_invisible_stub(vanilla_path: Path, out_path: Path) -> None:
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    print("Building invisible arm/neck/groin stubs:")
+    print("Building invisible body stubs:")
     for rel_src, out_name in STUBS:
         src = MORROWIND / rel_src
         if not src.is_file():

@@ -57,4 +57,4 @@ blender --background --python tools/build_invisible_1st_person.py
 node tools/build_esp.mjs
 ```
 
-Stub scripts need no `--addons` flag; they import `es3.nif` from the vendored `lib/` via `sys.path`.
+Stub scripts need no `--addons` flag; they import `es3.nif` from the vendored `lib/` via `sys.path`. `build_invisible_stubs.py` rebuilds all invisible slot NIFs (arms, legs, neck, groin, hair).

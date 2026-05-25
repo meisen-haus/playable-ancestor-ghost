@@ -38,8 +38,6 @@ ROBE_PARTS = ("Tri robe front", "Tri robe back")
 HAND_RIGHT_SRC = "Tri hand"
 HAND_LEFT_SRC = "Tri hand01"
 REF_CHEST = "Tri Chest"
-REF_HAND_R = "Tri Right Hand 0"
-REF_HAND_L = "Tri Left Hand 0"
 
 EXPORT_CHEST = "ag_chest_geo"
 EXPORT_HAND_R = "ag_hand_r_geo"
@@ -50,51 +48,6 @@ TRI_HAND_R = "Tri Right Hand 0"
 TRI_HAND_L = "Tri Left Hand 0"
 
 CHEST_Z_NUDGE = 4.0
-
-# Chest + hand skinning: "ghost" = 85% torso / 15% limbs on chest, finger weights on hands;
-# "rigid_root" = 100% Bip01 NiNode for chest and both hands (no run-cycle flex).
-CHEST_WEIGHT_MODE = "rigid_root"
-
-# Ghost body (CHEST_WEIGHT_MODE == "ghost"): bias weights toward torso/spine.
-GHOST_TORSO_SHARE = 0.85
-GHOST_TORSO_FALLBACK = "Bip01 Spine2"
-GHOST_TORSO_BONES = frozenset(
-    {
-        "Bip01 Spine",
-        "Bip01 Spine1",
-        "Bip01 Spine2",
-        "Bip01 Pelvis",
-        "Bip01 Neck",
-        "Bip01 Head",
-        "Bip01 Clavicle.R",
-        "Bip01 Clavicle.L",
-    }
-)
-
-HAND_BONE_REMAP = {
-    "Bip01 Hand.R": "Bip01 Finger21.R",
-    "Bip01 Finger01.R": "Bip01 Finger11.R",
-    "Bip01 Finger02.R": "Bip01 Finger1.R",
-    "Bip01 Finger11.R": "Bip01 Finger11.R",
-    "Bip01 Finger12.R": "Bip01 Finger1.R",
-    "Bip01 Finger21.R": "Bip01 Finger21.R",
-    "Bip01 Finger22.R": "Bip01 Finger2.R",
-    "Bip01 Finger31.R": "Bip01 Finger21.R",
-    "Bip01 Finger32.R": "Bip01 Finger2.R",
-    "Bip01 Finger41.R": "Bip01 Finger21.R",
-    "Bip01 Finger42.R": "Bip01 Finger2.R",
-    "Bip01 Hand.L": "Bip01 Finger21.L",
-    "Bip01 Finger01.L": "Bip01 Finger11.L",
-    "Bip01 Finger02.L": "Bip01 Finger1.L",
-    "Bip01 Finger11.L": "Bip01 Finger11.L",
-    "Bip01 Finger12.L": "Bip01 Finger1.L",
-    "Bip01 Finger21.L": "Bip01 Finger21.L",
-    "Bip01 Finger22.L": "Bip01 Finger2.L",
-    "Bip01 Finger31.L": "Bip01 Finger21.L",
-    "Bip01 Finger32.L": "Bip01 Finger2.L",
-    "Bip01 Finger41.L": "Bip01 Finger21.L",
-    "Bip01 Finger42.L": "Bip01 Finger2.L",
-}
 
 if addon_utils.enable("io_scene_mw") is None:
     for path in (IO_SCENE_MW_LIB, IO_SCENE_MW):
@@ -278,101 +231,6 @@ def _copy_weights_nearest(
     target.parent = armature
 
 
-def _weight_stats(mesh: bpy.types.Object, label: str) -> None:
-    """Log average torso vs limb weight share per vertex (for build verification)."""
-    torso_sum = 0.0
-    limb_sum = 0.0
-    count = 0
-    for vert in mesh.data.vertices:
-        if not vert.groups:
-            continue
-        count += 1
-        for group in vert.groups:
-            name = mesh.vertex_groups[group.group].name
-            if name in GHOST_TORSO_BONES:
-                torso_sum += group.weight
-            else:
-                limb_sum += group.weight
-    if count:
-        print(
-            f"  {label}: avg torso {torso_sum / count:.3f}, "
-            f"avg limb {limb_sum / count:.3f} ({count} weighted verts)"
-        )
-
-
-def _ghostify_weights(
-    mesh: bpy.types.Object,
-    is_torso_bone,
-    *,
-    torso_share: float = GHOST_TORSO_SHARE,
-    torso_fallback: str = GHOST_TORSO_FALLBACK,
-) -> None:
-    """Bias skin weights toward torso/anchor bones; limbs keep the residual share."""
-    limb_share = 1.0 - torso_share
-    per_vertex: list[dict[str, float]] = []
-
-    for vert in mesh.data.vertices:
-        weights: dict[str, float] = {}
-        for group in vert.groups:
-            name = mesh.vertex_groups[group.group].name
-            weights[name] = group.weight
-        per_vertex.append(weights)
-
-    for vert_index, weights in enumerate(per_vertex):
-        if not weights:
-            per_vertex[vert_index] = {torso_fallback: 1.0}
-            continue
-
-        torso = {name: w for name, w in weights.items() if is_torso_bone(name)}
-        limb = {name: w for name, w in weights.items() if not is_torso_bone(name)}
-        torso_total = sum(torso.values())
-        limb_total = sum(limb.values())
-        new_weights: dict[str, float] = {}
-
-        if torso_total > 0.0:
-            for name, weight in torso.items():
-                new_weights[name] = (weight / torso_total) * torso_share
-        else:
-            new_weights[torso_fallback] = torso_share
-
-        if limb_total > 0.0:
-            for name, weight in limb.items():
-                new_weights[name] = (weight / limb_total) * limb_share
-
-        per_vertex[vert_index] = new_weights
-
-    mesh.vertex_groups.clear()
-    group_cache: dict[str, bpy.types.VertexGroup] = {}
-    for vert_index, weights in enumerate(per_vertex):
-        total = sum(weights.values())
-        if total <= 0.0:
-            weights = {torso_fallback: 1.0}
-            total = 1.0
-        for name, weight in weights.items():
-            if name not in group_cache:
-                group_cache[name] = mesh.vertex_groups.new(name=name)
-            group_cache[name].add([vert_index], weight / total, "REPLACE")
-
-
-def _ghostify_chest_weights(mesh: bpy.types.Object) -> None:
-    _ghostify_weights(mesh, lambda name: name in GHOST_TORSO_BONES)
-
-
-def _snap_mesh_to_reference_bind_space(mesh: bpy.types.Object, reference: bpy.types.Object) -> None:
-    """Move mesh verts into Dunmer Hand 0 local space (finger-weight export path only)."""
-    _ensure_object_mode()
-    mesh.select_set(True)
-    bpy.context.view_layer.objects.active = mesh
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
-
-    ref_mw = reference.matrix_world.copy()
-    mesh_mw = mesh.matrix_world.copy()
-    for vert in mesh.data.vertices:
-        world = mesh_mw @ vert.co
-        vert.co = ref_mw.inverted() @ world
-    mesh.matrix_world = ref_mw
-
-
 def _place_hand_creature_world(
     mesh: bpy.types.Object,
     armature: bpy.types.Object,
@@ -429,68 +287,20 @@ def _ensure_material(mesh: bpy.types.Object) -> None:
         poly.material_index = 0
 
 
-def _remap_hand_weights(mesh: bpy.types.Object, armature: bpy.types.Object, side: str) -> None:
-    """Collapse creature 11-bone hand weights onto Dunmer's 4 finger bones."""
-    from collections import defaultdict
-
-    valid_bones = {bone.name for bone in armature.data.bones}
-    fallback = f"Bip01 Finger21.{side}"
-    per_vertex: list[defaultdict[str, float]] = [
-        defaultdict(float) for _ in range(len(mesh.data.vertices))
-    ]
-
-    for vg in mesh.vertex_groups:
-        target = HAND_BONE_REMAP.get(vg.name, vg.name)
-        if target not in valid_bones:
-            continue
-        for vert in mesh.data.vertices:
-            for group in vert.groups:
-                if group.group == vg.index:
-                    per_vertex[vert.index][target] += group.weight
-
-    mesh.vertex_groups.clear()
-    group_cache: dict[str, bpy.types.VertexGroup] = {}
-
-    for vert_index, weights in enumerate(per_vertex):
-        total = sum(weights.values())
-        if total <= 0.0:
-            weights[fallback] = 1.0
-            total = 1.0
-        for name, weight in weights.items():
-            if name not in group_cache:
-                group_cache[name] = mesh.vertex_groups.new(name=name)
-            group_cache[name].add([vert_index], weight / total, "REPLACE")
-
-    if not mesh.modifiers.get("Armature"):
-        mod = mesh.modifiers.new("Armature", "ARMATURE")
-        mod.object = armature
-    mesh.parent = armature
-
-
 def _prepare_hand_mesh(
     source_name: str,
-    reference_name: str,
     export_name: str,
     armature: bpy.types.Object,
     chest_align_offset: Vector,
+    *,
+    side: str,
 ) -> bpy.types.Object:
     """Ghost hand at creature sleeve position; rigid Bip01 root applied in NIF post."""
-    side = "R" if reference_name == REF_HAND_R else "L"
     mesh = _duplicate_unparented(source_name)
     _bake_armature_deformation(mesh)
     _apply_non_armature_modifiers(mesh)
-
-    if CHEST_WEIGHT_MODE == "rigid_root":
-        _place_hand_creature_world(mesh, armature, chest_align_offset, side=side)
-        print(f"Hand {side}: rigid Bip01 root (applied in NIF post-process)")
-    else:
-        reference = bpy.data.objects.get(reference_name)
-        if reference is None:
-            raise RuntimeError(f"Missing Dunmer reference mesh '{reference_name}'.")
-        _snap_mesh_to_reference_bind_space(mesh, reference)
-        _remap_hand_weights(mesh, armature, side)
-        print(f"Hand {side} weights after creature→Dunmer remap:")
-        _weight_stats(mesh, f"hand_{side.lower()}")
+    _place_hand_creature_world(mesh, armature, chest_align_offset, side=side)
+    print(f"Hand {side}: rigid Bip01 root (applied in NIF post-process)")
 
     if not mesh.modifiers.get("Armature"):
         mod = mesh.modifiers.new("Armature", "ARMATURE")
@@ -524,21 +334,12 @@ def prepare_body_meshes() -> tuple[bpy.types.Object, list[bpy.types.Object]]:
     chest_offset = _align_world_to_reference(chest, chest_ref)
     print(f"Chest align offset: ({chest_offset.x:.3f}, {chest_offset.y:.3f}, {chest_offset.z:.3f})")
     _copy_weights_nearest(chest, chest_ref, armature)
-    if CHEST_WEIGHT_MODE == "ghost":
-        print("Chest weights before ghostify:")
-        _weight_stats(chest, "chest")
-        _ghostify_chest_weights(chest)
-        print("Chest weights after ghostify:")
-        _weight_stats(chest, "chest")
-    elif CHEST_WEIGHT_MODE == "rigid_root":
-        print("Chest weights: rigid Bip01 root (applied in NIF post-process)")
-    else:
-        raise RuntimeError(f"Unknown CHEST_WEIGHT_MODE: {CHEST_WEIGHT_MODE!r}")
+    print("Chest weights: rigid Bip01 root (applied in NIF post-process)")
     _ensure_material(chest)
     _link_for_export(chest, armature)
 
-    hand_r = _prepare_hand_mesh(HAND_RIGHT_SRC, REF_HAND_R, EXPORT_HAND_R, armature, chest_offset)
-    hand_l = _prepare_hand_mesh(HAND_LEFT_SRC, REF_HAND_L, EXPORT_HAND_L, armature, chest_offset)
+    hand_r = _prepare_hand_mesh(HAND_RIGHT_SRC, EXPORT_HAND_R, armature, chest_offset, side="R")
+    hand_l = _prepare_hand_mesh(HAND_LEFT_SRC, EXPORT_HAND_L, armature, chest_offset, side="L")
 
     export_meshes = [chest, hand_r, hand_l]
     keep = {ARMATURE, EXPORT_CHEST, EXPORT_HAND_R, EXPORT_HAND_L}
@@ -653,46 +454,6 @@ def _find_node(stream: nif.NiStream, name: str):
     return None
 
 
-def _sync_hand_skin_from_vanilla(
-    shape: nif.NiTriShape,
-    vanilla_tri: nif.NiTriShape,
-) -> None:
-    """Copy Dunmer hand bind matrices so finger weights deform with grip pose."""
-    if shape.skin is None or vanilla_tri.skin is None:
-        return
-    if vanilla_tri.skin.data is not None and shape.skin.data is not None:
-        shape.skin.data.matrix = np.array(vanilla_tri.skin.data.matrix, copy=True)
-
-    vanilla_bones = {
-        bone.name: bone_data
-        for bone, bone_data in zip(vanilla_tri.skin.bones, vanilla_tri.skin.data.bone_data)
-        if bone is not None
-    }
-    synced = 0
-    for bone, bone_data in zip(shape.skin.bones, shape.skin.data.bone_data):
-        if bone is None:
-            continue
-        ref = vanilla_bones.get(bone.name)
-        if ref is None:
-            continue
-        bone_data.matrix = np.array(ref.matrix, copy=True)
-        synced += 1
-    shape.skin.data.update_center_radius(shape.data.vertices, exact=True)
-    print(f"  hand skin bind {shape.name}: synced {synced} bones from vanilla")
-
-
-def _fix_hand_skin_root(shape: nif.NiTriShape, vanilla_tri: nif.NiTriShape, stream: nif.NiStream) -> None:
-    """Match hand NiSkinInstance root to vanilla without replacing bind data."""
-    if shape.skin is None or vanilla_tri.skin is None or vanilla_tri.skin.root is None:
-        return
-    root = _find_node(stream, vanilla_tri.skin.root.name)
-    if root is None:
-        raise RuntimeError(f"Missing hand skin root '{vanilla_tri.skin.root.name}' in export.")
-    if shape.skin.root != root:
-        shape.skin.root = root
-        print(f"  hand skin root {shape.name}: {root.name}")
-
-
 def finalize_vanilla_chest(exported_path: Path, vanilla_path: Path, out_path: Path) -> None:
     vanilla = nif.NiStream()
     vanilla.load(vanilla_path)
@@ -734,15 +495,10 @@ def finalize_vanilla_chest(exported_path: Path, vanilla_path: Path, out_path: Pa
 
         if new_name == TRI_CHEST:
             _nudge_chest_up(shape, CHEST_Z_NUDGE)
-            if CHEST_WEIGHT_MODE == "rigid_root":
-                _apply_rigid_root_skin(shape, stream)
+            _apply_rigid_root_skin(shape, stream)
         elif new_name in (TRI_HAND_R, TRI_HAND_L):
-            if CHEST_WEIGHT_MODE == "rigid_root":
-                _nudge_chest_up(shape, CHEST_Z_NUDGE)
-                _apply_rigid_root_skin(shape, stream)
-            elif vanilla_tri is not None:
-                _sync_hand_skin_from_vanilla(shape, vanilla_tri)
-                _fix_hand_skin_root(shape, vanilla_tri, stream)
+            _nudge_chest_up(shape, CHEST_Z_NUDGE)
+            _apply_rigid_root_skin(shape, stream)
             if vanilla_tri is not None:
                 for prop in vanilla_tri.properties:
                     if isinstance(prop, nif.NiVertexColorProperty):
@@ -781,35 +537,23 @@ def validate(out_path: Path) -> None:
         "no morpher": "NiGeomMorpherController" not in data,
         "texture path": "ghostward_tunic" in data.lower(),
     }
-    if CHEST_WEIGHT_MODE == "rigid_root":
-        chest = next(t for t in stream.objects_of_type(nif.NiTriShape) if t.name == TRI_CHEST)
-        rigid_ok = (
-            chest.skin is not None
-            and len(chest.skin.bones) == 1
-            and chest.skin.bones[0].name == ARMATURE
-            and chest.skin.root.name == ARMATURE
+    chest = next(t for t in stream.objects_of_type(nif.NiTriShape) if t.name == TRI_CHEST)
+    checks["rigid chest skin"] = (
+        chest.skin is not None
+        and len(chest.skin.bones) == 1
+        and chest.skin.bones[0].name == ARMATURE
+        and chest.skin.root.name == ARMATURE
+    )
+    for hand_name in (TRI_HAND_R, TRI_HAND_L):
+        hand = next((t for t in stream.objects_of_type(nif.NiTriShape) if t.name == hand_name), None)
+        if hand is None or hand.skin is None:
+            checks[f"{hand_name} rigid skin"] = False
+            continue
+        checks[f"{hand_name} rigid skin"] = (
+            len(hand.skin.bones) == 1
+            and hand.skin.bones[0].name == ARMATURE
+            and hand.skin.root.name == ARMATURE
         )
-        checks["rigid chest skin"] = rigid_ok
-        for hand_name in (TRI_HAND_R, TRI_HAND_L):
-            hand = next((t for t in stream.objects_of_type(nif.NiTriShape) if t.name == hand_name), None)
-            if hand is None or hand.skin is None:
-                checks[f"{hand_name} rigid skin"] = False
-                continue
-            checks[f"{hand_name} rigid skin"] = (
-                len(hand.skin.bones) == 1
-                and hand.skin.bones[0].name == ARMATURE
-                and hand.skin.root.name == ARMATURE
-            )
-    else:
-        for hand_name, side in ((TRI_HAND_R, "R"), (TRI_HAND_L, "L")):
-            hand = next((t for t in stream.objects_of_type(nif.NiTriShape) if t.name == hand_name), None)
-            if hand is None or hand.skin is None:
-                checks[f"{hand_name} skinned"] = False
-                continue
-            checks[f"{hand_name} skinned"] = True
-            checks[f"{hand_name} 4 finger bones"] = len(hand.skin.bones) == 4
-            upper = f"Bip01 {'R' if side == 'R' else 'L'} UpperArm"
-            checks[f"{hand_name} root UpperArm"] = hand.skin.root is not None and hand.skin.root.name == upper
     failed = [name for name, ok in checks.items() if not ok]
     print("Validation:")
     for name, ok in checks.items():
