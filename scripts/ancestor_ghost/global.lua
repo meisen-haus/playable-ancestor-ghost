@@ -1,5 +1,4 @@
--- ancestor_ghost/global.lua
--- GLOBAL script: equipment slot enforcement for Ancestor Ghost players.
+-- GLOBAL script: equipment slot enforcement for ancestor_ghost race.
 
 local types = require('openmw.types')
 local world = require('openmw.world')
@@ -20,8 +19,8 @@ local LOCKED_SLOTS = {
   S.Pants,
   S.Skirt,
   S.Robe,
-  S.CarriedLeft,   -- shield / off-hand
-  S.CarriedRight,  -- weapon (one- or two-handed)
+  S.CarriedLeft,
+  S.CarriedRight,
   S.Ammunition,
 }
 
@@ -37,7 +36,7 @@ local function enforceSlots(player)
   for _, slot in ipairs(LOCKED_SLOTS) do
     local item = types.Actor.getEquipment(player, slot)
     if item then
-      player:sendEvent('Unequip',         { slot = slot })
+      player:sendEvent('Unequip', { slot = slot })
       player:sendEvent('AG_EquipBlocked', {})
     end
   end
@@ -47,12 +46,12 @@ return {
   engineHandlers = {
     onUpdate = function(dt)
       timeSinceCheck = timeSinceCheck + dt
-      if timeSinceCheck < CHECK_INTERVAL then return end
-      timeSinceCheck = 0
-
-      for _, player in ipairs(world.players) do
-        if getPlayerRace(player) == RACE_ID then
-          enforceSlots(player)
+      if timeSinceCheck >= CHECK_INTERVAL then
+        timeSinceCheck = 0
+        for _, player in ipairs(world.players) do
+          if getPlayerRace(player) == RACE_ID then
+            enforceSlots(player)
+          end
         end
       end
     end,

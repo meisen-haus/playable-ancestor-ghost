@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Builds ancestor_ghost.omwaddon containing:
- *   - 2×  SPEL records  (ag_ghostly_nature ability, ag_ghost_curse spell)
+ *   - 8×  SPEL records  (3× ghostly nature immunity, ghost curse, wraith kit)
  *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
  *
@@ -22,13 +22,27 @@ const OUT = join(__dirname, '..', 'ancestor_ghost.omwaddon');
 const FX = {
   CHAMELEON             : 40, // Chameleon (OpenMW sMagicEffectIds index; 41 is Light)
   RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons (vanilla resist fire_75 uses 90)
-  RESIST_FROST          : 91, // ResistFrost
+  RESIST_FROST          : 91, // ResistFrost (Ghostly Nature)
+  RESIST_SHOCK          : 92, // ResistShock (Wraith)
   RESIST_POISON         : 97, // ResistPoison
   DRAIN_ATTRIBUTE       : 17, // DrainAttribute
   DRAIN_FATIGUE         : 20, // DrainFatigue
   DAMAGE_HEALTH         : 23, // DamageHealth
+  FORTIFY_MAX_MAGICKA   : 84, // FortifyMaximumMagicka (M/10 adds to INT multiplier; 20 → 3× INT)
+  FORTIFY_ATTRIBUTE     : 79, // FortifyAttribute (Wraith: +25 Endurance)
+  DAMAGE_ATTRIBUTE      : 22, // DamageAttribute (Bonebiter)
 };
-const ATTR = { ENDURANCE: 2 };
+// Morrowind attribute indices (MWSE / OpenMW ESM::Attribute); see daedric_willpower (at 2), daedric_endurance (at 5).
+const ATTR = {
+  STRENGTH: 0,
+  INTELLIGENCE: 1,
+  WILLPOWER: 2,
+  AGILITY: 3,
+  SPEED: 4,
+  ENDURANCE: 5,
+  PERSONALITY: 6,
+  LUCK: 7,
+};
 
 // Skin meshes from Morrowind.esm (Dark Elf BODY records). Clavicle (part 13) omitted.
 const DUNMER_SKIN = {
@@ -175,17 +189,28 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 }
 
 // ---------------------------------------------------------------------------
-// SPEL: ag_ghostly_nature  (racial ability)
+// SPEL: ag_ghostly_nature_{100,50,0}  (racial ability — Scripts picks one)
 // ---------------------------------------------------------------------------
-function buildGhostlyNatureSpell() {
+function buildGhostlyNatureSpell(spellId, resistNormalWeapons) {
+  const enams = [
+    subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
+    subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
+    subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
+    subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: 20,  magMax: 20  })),
+  ];
+  if (resistNormalWeapons > 0) {
+    enams.splice(1, 0, subrecord('ENAM', enam({
+      effectId: FX.RESIST_NORMAL_WEAPONS,
+      duration: 0,
+      magMin: resistNormalWeapons,
+      magMax: resistNormalWeapons,
+    })));
+  }
   return record('SPEL', [
-    subrecord('NAME', zstring('ag_ghostly_nature')),
+    subrecord('NAME', zstring(spellId)),
     subrecord('FNAM', zstring('Ghostly Nature')),
     subrecord('SPDT', spdt(1, 0, 0x0000)),
-    subrecord('ENAM', enam({ effectId: FX.CHAMELEON,             duration: 0, magMin: 50,  magMax: 50  })),
-    subrecord('ENAM', enam({ effectId: FX.RESIST_NORMAL_WEAPONS, duration: 0, magMin: 100, magMax: 100 })),
-    subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,          duration: 0, magMin: 100, magMax: 100 })),
-    subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,         duration: 0, magMin: 100, magMax: 100 })),
+    ...enams,
   ]);
 }
 
@@ -196,10 +221,49 @@ function buildGhostCurseSpell() {
   return record('SPEL', [
     subrecord('NAME', zstring('ag_ghost_curse')),
     subrecord('FNAM', zstring('Ghost Curse')),
-    subrecord('SPDT', spdt(0, 0, 0x0001)),
+    // flags 0: use cost field. flags 1 (F_Autocalc) recalculates ~40 like vanilla Ghost Curse.
+    subrecord('SPDT', spdt(0, 9, 0x0000)),
     subrecord('ENAM', enam({ effectId: FX.DRAIN_ATTRIBUTE, attributeId: ATTR.ENDURANCE, range: 1, duration: 30, magMin: 5,  magMax: 5  })),
     subrecord('ENAM', enam({ effectId: FX.DRAIN_FATIGUE,                                range: 1, duration: 30, magMin: 10, magMax: 10 })),
     subrecord('ENAM', enam({ effectId: FX.DAMAGE_HEALTH,                                range: 1, duration: 0,  magMin: 1,  magMax: 10 })),
+  ]);
+}
+
+// Wraith of Sul-Senipul (optional; granted via Lua when enabled in mod settings)
+function buildWraithAbility() {
+  return record('SPEL', [
+    subrecord('NAME', zstring('ag_wraith_sul')),
+    subrecord('FNAM', zstring('Wraith')),
+    subrecord('SPDT', spdt(1, 0, 0x0000)),
+    subrecord('ENAM', enam({ effectId: FX.FORTIFY_ATTRIBUTE, attributeId: ATTR.ENDURANCE, duration: 0, magMin: 25, magMax: 25 })),
+    subrecord('ENAM', enam({ effectId: FX.RESIST_SHOCK,      duration: 0, magMin: 100, magMax: 100 })),
+  ]);
+}
+
+function buildWraithGraveFatigue() {
+  return record('SPEL', [
+    subrecord('NAME', zstring('ag_wraith_grave_fatigue')),
+    subrecord('FNAM', zstring('Grave Curse: Fatigue')),
+    subrecord('SPDT', spdt(0, 0, 0x0001)),
+    subrecord('ENAM', enam({ effectId: FX.DRAIN_FATIGUE, range: 2, duration: 10, magMin: 2, magMax: 4 })),
+  ]);
+}
+
+function buildWraithGraveStrength() {
+  return record('SPEL', [
+    subrecord('NAME', zstring('ag_wraith_grave_strength')),
+    subrecord('FNAM', zstring('Grave Curse: Strength')),
+    subrecord('SPDT', spdt(0, 0, 0x0001)),
+    subrecord('ENAM', enam({ effectId: FX.DRAIN_ATTRIBUTE, attributeId: ATTR.STRENGTH, range: 2, duration: 60, magMin: 2, magMax: 4 })),
+  ]);
+}
+
+function buildWraithBonebiter() {
+  return record('SPEL', [
+    subrecord('NAME', zstring('ag_wraith_bonebiter')),
+    subrecord('FNAM', zstring('Bonebiter')),
+    subrecord('SPDT', spdt(0, 0, 0x0001)),
+    subrecord('ENAM', enam({ effectId: FX.DAMAGE_ATTRIBUTE, attributeId: ATTR.AGILITY, range: 2, duration: 1, magMin: 20, magMax: 20 })),
   ]);
 }
 
@@ -262,8 +326,10 @@ function buildAllBodyRecords() {
 //
 // RADT layout (140 bytes):
 //   Skill bonuses : 7 × (int32 skillId + int32 bonus) = 56 bytes  [0..55]
-//   Male attrs    : 8 × int32 = 32 bytes                          [56..87]
-//   Female attrs  : 8 × int32 = 32 bytes                          [88..119]
+//   Attributes    : 16 × int32 interleaved by attribute (OpenMW    [56..119]
+//                   ESM::Race::RADTstruct::mAttributeValues):
+//                   Str♂, Str♀, Int♂, Int♀, Wil♂, Wil♀, Agi♂, Agi♀,
+//                   Spd♂, Spd♀, End♂, End♀, Per♂, Per♀, Lck♂, Lck♀
 //   Height male/female float: 8 bytes                             [120..127]
 //   Weight male/female float: 8 bytes                             [128..135]
 //   Flags int32: 4 bytes                                          [136..139]
@@ -273,9 +339,9 @@ function buildAllBodyRecords() {
 // NPCS, DESC. Body parts are separate BODY records whose FNAM subrecord
 // holds the race ID; OpenMW scans BODY records by race + BYDT part/gender.
 // ---------------------------------------------------------------------------
-const RACE_ATTRS = [30, 65, 30, 50, 60, 20, 20, 40];
+const RACE_ATTRS = [30, 50, 50, 50, 50, 20, 20, 40];
 const RACE_SKILLS = [
-  [11, 10], [12, 10], [7, 10], [26, 10],
+  [10, 15], [14, 10], [11, 10], [13, 10], // Destruction, Mysticism, Alteration, Conjuration
   [-1, 0], [-1, 0], [-1, 0],
 ];
 
@@ -286,19 +352,21 @@ function buildRaceRecord() {
     radt.writeInt32LE(skillId, o); o += 4;
     radt.writeInt32LE(bonus,   o); o += 4;
   }
-  for (const v of RACE_ATTRS) { radt.writeInt32LE(v, o); o += 4; }
-  for (const v of RACE_ATTRS) { radt.writeInt32LE(v, o); o += 4; }
+  for (const v of RACE_ATTRS) {
+    radt.writeInt32LE(v, o); o += 4; // male
+    radt.writeInt32LE(v, o); o += 4; // female (same targets for both)
+  }
   radt.writeFloatLE(1.0, o); o += 4;
   radt.writeFloatLE(1.0, o); o += 4;
-  radt.writeFloatLE(0.5, o); o += 4;
-  radt.writeFloatLE(0.5, o); o += 4;
+  radt.writeFloatLE(1.0, o); o += 4;
+  radt.writeFloatLE(1.0, o); o += 4;
   radt.writeInt32LE(0x01, o); // Playable only (not Beast — beast skeleton breaks Dunmer head preview)
 
   const subs = [
     subrecord('NAME', zstring('ancestor_ghost')),
     subrecord('FNAM', zstring('Ancestor Ghost')),
     subrecord('RADT', radt),
-    subrecord('NPCS', padId('ag_ghostly_nature')),
+    // Ghostly Nature variant granted by Lua (immunity setting); not on race NPCS.
     subrecord('NPCS', padId('ag_ghost_curse')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
@@ -315,12 +383,21 @@ function buildRaceRecord() {
 // Assemble plugin
 // ---------------------------------------------------------------------------
 const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 hair = 26 BODY
-const CONTENT_RECORDS = 2 + bodyRecords.length + 1;   // spells + bodies + race
+const SPELL_RECORDS = [
+  buildGhostlyNatureSpell('ag_ghostly_nature_100', 100),
+  buildGhostlyNatureSpell('ag_ghostly_nature_50', 50),
+  buildGhostlyNatureSpell('ag_ghostly_nature_0', 0),
+  buildGhostCurseSpell(),
+  buildWraithAbility(),
+  buildWraithGraveFatigue(),
+  buildWraithGraveStrength(),
+  buildWraithBonebiter(),
+];
+const CONTENT_RECORDS = SPELL_RECORDS.length + bodyRecords.length + 1;
 
 const allRecords = [
   buildTes3Header(CONTENT_RECORDS),
-  buildGhostlyNatureSpell(),
-  buildGhostCurseSpell(),
+  ...SPELL_RECORDS,
   ...bodyRecords,
   buildRaceRecord(),
 ];
@@ -333,8 +410,13 @@ writeFileSync(OUT, plugin);
 // ---------------------------------------------------------------------------
 const text = plugin.toString('binary');
 const required = [
-  ['ag_ghostly_nature',          'Ghostly Nature spell ID'],
+  ['ag_ghostly_nature_100',      'Ghostly Nature 100% ID'],
+  ['ag_ghostly_nature_50',       'Ghostly Nature 50% ID'],
+  ['ag_ghostly_nature_0',        'Ghostly Nature 0% ID'],
   ['ag_ghost_curse',             'Ghost Curse spell ID'],
+  ['ag_wraith_sul',              'Wraith ability ID'],
+  ['ag_wraith_grave_fatigue',    'Wraith Grave Curse Fatigue ID'],
+  ['ag_wraith_bonebiter',        'Bonebiter spell ID'],
   ['ancestor_ghost',             'Race record ID'],
   ['Ancestor Ghost',             'Race display name'],
   ['ag_head_m_01',               'Male head body part ID'],
@@ -356,6 +438,98 @@ for (const [needle, label] of required) {
   if (!text.includes(needle)) {
     console.error(`validation FAILED: missing ${label} ("${needle}")`);
     ok = false;
+  }
+}
+
+// Sanity-check Wraith ability ENAM (catches wrong attribute / effect indices).
+for (let i = 0; i < plugin.length - 16; i++) {
+  if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
+  const size = plugin.readInt32LE(i + 4);
+  const body = plugin.slice(i + 16, i + 16 + size);
+  let o = 0;
+  let id = '';
+  const enams = [];
+  while (o < body.length - 8) {
+    const st = body.slice(o, o + 4).toString('ascii');
+    const ss = body.readInt32LE(o + 4);
+    const d = body.slice(o + 8, o + 8 + ss);
+    o += 8 + ss;
+    if (st === 'NAME') id = d.toString('binary').replace(/\0.*/, '');
+    if (st === 'ENAM' && d.length >= 24) {
+      enams.push({ e: d.readInt16LE(0), at: d.readInt8(3), mag: d.readInt32LE(16) });
+    }
+  }
+  if (id !== 'ag_wraith_sul') continue;
+  const fortify = enams.find((c) => c.e === FX.FORTIFY_ATTRIBUTE);
+  if (!fortify || fortify.at !== ATTR.ENDURANCE || fortify.mag !== 25) {
+    console.error('validation FAILED: ag_wraith_sul fortify endurance ENAM', enams);
+    ok = false;
+  }
+  const shock = enams.find((c) => c.e === FX.RESIST_SHOCK);
+  if (!shock || shock.mag !== 100) {
+    console.error('validation FAILED: ag_wraith_sul resist shock ENAM', enams);
+    ok = false;
+  }
+  break;
+}
+
+for (let i = 0; i < plugin.length - 16; i++) {
+  if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
+  const size = plugin.readInt32LE(i + 4);
+  const body = plugin.slice(i + 16, i + 16 + size);
+  let o = 0;
+  let spellId = '';
+  while (o < body.length - 8) {
+    const st = body.slice(o, o + 4).toString('ascii');
+    const ss = body.readInt32LE(o + 4);
+    const d = body.slice(o + 8, o + 8 + ss);
+    o += 8 + ss;
+    if (st === 'NAME') spellId = d.toString('binary').replace(/\0.*/, '');
+    if (st === 'SPDT' && spellId === 'ag_ghost_curse' && d.length >= 12) {
+      const cost = d.readInt32LE(4);
+      const flags = d.readUInt32LE(8);
+      if (cost !== 9 || flags !== 0) {
+        console.error(`validation FAILED: ag_ghost_curse SPDT cost=${cost} flags=0x${flags.toString(16)}`);
+        ok = false;
+      }
+    }
+  }
+}
+
+for (const [id, resist] of [
+  ['ag_ghostly_nature_100', 100],
+  ['ag_ghostly_nature_50', 50],
+  ['ag_ghostly_nature_0', 0],
+]) {
+  for (let i = 0; i < plugin.length - 16; i++) {
+    if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
+    const size = plugin.readInt32LE(i + 4);
+    const body = plugin.slice(i + 16, i + 16 + size);
+    let o = 0;
+    let spellId = '';
+    const enams = [];
+    while (o < body.length - 8) {
+      const st = body.slice(o, o + 4).toString('ascii');
+      const ss = body.readInt32LE(o + 4);
+      const d = body.slice(o + 8, o + 8 + ss);
+      o += 8 + ss;
+      if (st === 'NAME') spellId = d.toString('binary').replace(/\0.*/, '');
+      if (st === 'ENAM' && d.length >= 24) {
+        enams.push({ e: d.readInt16LE(0), mag: d.readInt32LE(16) });
+      }
+    }
+    if (spellId !== id) continue;
+    const rnw = enams.find((c) => c.e === FX.RESIST_NORMAL_WEAPONS);
+    if (resist === 0) {
+      if (rnw) {
+        console.error(`validation FAILED: ${id} should omit resist normal weapons`, enams);
+        ok = false;
+      }
+    } else if (!rnw || rnw.mag !== resist) {
+      console.error(`validation FAILED: ${id} resist normal weapons ENAM`, enams);
+      ok = false;
+    }
+    break;
   }
 }
 
