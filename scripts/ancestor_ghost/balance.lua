@@ -57,6 +57,12 @@ local function disableWraith(player)
   end
 end
 
+local function ghostlyNatureMatches(player, immunityMag)
+  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[immunityMag]
+    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+  return types.Actor.spells(player)[target] ~= nil
+end
+
 -- Returns true when no further apply retries are needed.
 local function applyToPlayer(player, settings)
   local rec = types.NPC.record(player)
@@ -72,9 +78,13 @@ local function applyToPlayer(player, settings)
     disableWraith(player)
   end
 
-  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[settings.normalWeaponsImmunity]
-    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
-  return types.Actor.spells(player)[target] ~= nil
+  if not ghostlyNatureMatches(player, settings.normalWeaponsImmunity) then
+    return false
+  end
+  if settings.wraith and not types.Actor.spells(player)[config.SPELL_WRAITH] then
+    return false
+  end
+  return true
 end
 
 return {

@@ -366,8 +366,9 @@ function buildRaceRecord() {
     subrecord('NAME', zstring('ancestor_ghost')),
     subrecord('FNAM', zstring('Ancestor Ghost')),
     subrecord('RADT', radt),
-    // Ghostly Nature variant granted by Lua (immunity setting); not on race NPCS.
+    // Default racial ability at chargen; balance.lua swaps variant from mod settings.
     subrecord('NPCS', padId('ag_ghost_curse')),
+    subrecord('NPCS', padId('ag_ghostly_nature_100')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
       'Spectral and untouchable by mundane weapons, they cannot wield physical arms or don ' +
