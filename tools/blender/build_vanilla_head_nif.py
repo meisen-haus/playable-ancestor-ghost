@@ -8,7 +8,7 @@ Requires:
   - Vanilla Dunmer head at MORROWIND/Data Files/Meshes/b/B_N_Dark Elf_M_Head_01.NIF
 
 Run from repo root:
-  blender --background tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_head_nif.py
+  blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_head_nif.py
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 import bpy
+import addon_utils
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -26,6 +27,7 @@ import bpy
 SCRIPT_DIR = Path(__file__).resolve().parent
 MOD_ROOT = SCRIPT_DIR.parents[1]
 IO_SCENE_MW = MOD_ROOT / "tools" / "downloads" / "io_scene_mw"
+IO_SCENE_MW_LIB = IO_SCENE_MW / "io_scene_mw" / "lib"
 MORROWIND = Path(r"C:/Morrowind/Data Files")
 VANILLA_HEAD = MORROWIND / "Meshes/b/B_N_Dark Elf_M_Head_01.NIF"
 OUT_NIF = MOD_ROOT / "Meshes/ag/ag_head.nif"
@@ -35,8 +37,12 @@ TEXTURE_PATH = r"ag\TX_Ghostward_tunic.tga"
 ROOT_NAME = "ag_head_m_01"
 TRI_NAME = "Tri ag_head_m_01"
 
-if str(IO_SCENE_MW) not in sys.path:
-    sys.path.insert(0, str(IO_SCENE_MW))
+if addon_utils.enable("io_scene_mw") is None:
+    for path in (IO_SCENE_MW_LIB, IO_SCENE_MW):
+        if str(path) not in sys.path:
+            sys.path.insert(0, str(path))
+elif "io_scene_mw" not in bpy.context.preferences.addons:
+    bpy.ops.preferences.addon_enable(module="io_scene_mw")
 
 from es3 import nif  # noqa: E402
 from es3.nif import NiFloatData  # noqa: E402

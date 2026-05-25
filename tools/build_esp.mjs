@@ -60,18 +60,23 @@ const AG_ARM = {
   UpperArm : { m: 'ag\\ag_upperarm.nif', f: 'ag\\ag_upperarm.nif' },
 };
 
-// Ghost torso + hands (Chest and Hand slots share ag_chest.nif like vanilla Skins.nif).
+const AG_NECK = { m: 'ag\\ag_neck.nif', f: 'ag\\ag_neck.nif' };
+const AG_GROIN = { m: 'ag\\ag_groin.nif', f: 'ag\\ag_groin.nif' };
+
+// Ghost torso + hands (Chest/Hand slots share ag_chest.nif like vanilla Skins.nif).
 const AG_CHEST = { m: 'ag\\ag_chest.nif', f: 'ag\\ag_chest.nif' };
 
 const AG_SKIN = {
   ...DUNMER_SKIN,
+  Neck: AG_NECK,
+  Groin: AG_GROIN,
   Chest: AG_CHEST,
   Hand: AG_CHEST,
   ...AG_ARM,
   ...AG_LEG,
 };
 
-// One head + one hair per gender (char gen pairs by index — counts must match).
+// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk; chest stays rigid).
 const HEAD_VARIANTS = {
   m: ['ag\\ag_head.nif'],
   f: ['ag\\ag_head.nif'],
@@ -336,7 +341,9 @@ const required = [
   ['ag_head_f_01',               'Female head body part ID'],
   ['ag_hair_m_01',               'Male hair body part ID'],
   ['ag_hair_f_01',               'Female hair body part ID'],
-  ['ag\\ag_head.nif',            'Ghost head mesh path'],
+  ['ag\\ag_head.nif',            'Ghost head mesh (morpher, Head-bone attach)'],
+  ['ag\\ag_neck.nif',             'Invisible neck stub mesh path'],
+  ['ag\\ag_groin.nif',            'Invisible groin stub mesh path'],
   ['ag\\ag_chest.nif',            'Ghost chest/hand mesh path'],
   ['ag\\ag_wrist.nif',            'Invisible arm stub mesh path'],
   ['ag\\ag_foot.nif',            'Invisible leg stub mesh path'],
