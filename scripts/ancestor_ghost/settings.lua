@@ -27,14 +27,14 @@ function M.registerGroup()
         renderer = 'checkbox',
         name = 'wraithOfSulSenipul',
         description = 'wraithOfSulSenipulDescription',
-        default = false,
+        default = config.settingDefaults.wraithOfSulSenipul,
       },
       {
         key = config.settingNormalWeaponsKey,
         renderer = 'select',
         name = 'normalWeaponsImmunity',
         description = 'normalWeaponsImmunityDescription',
-        default = 100,
+        default = config.settingDefaults.normalWeaponsImmunity,
         argument = {
           l10n = 'AncestorGhost',
           items = { 100, 50, 0 },
