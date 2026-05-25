@@ -2,11 +2,23 @@ node_modules/
 *.omwaddon.bak
 .DS_Store
 *.tar.gz
+
+# Local Cursor / MCP (see .cursor/rules/blender-mcp.mdc)
+**/mcp.json
+**/blender_mcp_addon.py
+
+# Vendored tool archives (extracted source under io_scene_mw/ is tracked)
+tools/downloads/*.zip
+tools/downloads/*.7z
+
+# Python / Blender runtime cache
+**/__pycache__/
+**/*.py[cod]
+
 Meshes/ag/ag_invisible.nif
 Meshes/ag/_*.nif
 Meshes/ag/*.backup.nif
 Meshes/ag/*.skinned_backup.nif
 Meshes/ag/*with_alpha*
 Meshes/ag/*without_alpha*
-tools/blender/__pycache__/
 tools/blender/*.blend1

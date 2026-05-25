@@ -1,0 +1,60 @@
+---
+description: Use repo-local vendored Blender tools; never install upstream copies during agent runs
+alwaysApply: true
+---
+
+# Vendored build tools (`tools/downloads/`)
+
+Mesh and NIF work in this repo uses **pinned copies inside the repo**. Do not fetch or install alternate versions as part of agent workflows.
+
+## io_scene_mw (required for NIF builds)
+
+- **Location**: `tools/downloads/io_scene_mw/` (extracted [Greatness7/io_scene_mw](https://github.com/Greatness7/io_scene_mw) source)
+- **Used by**: `tools/blender/build_vanilla_*.py`, `tools/build_invisible_*.py`, `tools/blender/diff_*.py`
+- **Imports**: `from io_scene_mw import nif_export` and `from es3 import nif`
+
+Build scripts load the vendored copy automatically:
+
+```python
+IO_SCENE_MW = MOD_ROOT / "tools" / "downloads" / "io_scene_mw"
+IO_SCENE_MW_LIB = IO_SCENE_MW / "io_scene_mw" / "lib"
+# sys.path.insert(0, ...) and/or addon_utils.enable("io_scene_mw")
+```
+
+### Do NOT (agent runs)
+
+- Download `io_scene_mw.zip` from GitHub releases
+- `git clone` io_scene_mw into Blender's add-ons folder
+- Run Blender *Preferences → Install* to add a fresh copy
+- `pip install` / `pipx` / package-manager install of io_scene_mw
+- Tell the user to install io_scene_mw unless the vendored tree is **missing or broken**
+
+If export fails, fix paths or the vendored tree — do not substitute an unvetted upstream version.
+
+### Archives (local optional, not in git)
+
+`tools/downloads/*.zip` and `tools/downloads/*.7z` are **gitignored** duplicates. The extracted `io_scene_mw/` tree is what builds use. Do not commit archives.
+
+### Upgrading io_scene_mw (rare, deliberate only)
+
+Replace `tools/downloads/io_scene_mw/` in a focused change, rebuild all NIF outputs, and commit the updated tree. Not an ad-hoc install step.
+
+## NifSkope (optional, manual only)
+
+- **Local file**: `tools/downloads/NifSkope.7z` (gitignored)
+- **Not used** by Python build scripts — inspection/debug only
+- Do not install or wire NifSkope into automated builds
+
+## Build commands (use vendored io_scene_mw via scripts)
+
+From repo root; Blender 5.1+; Morrowind at `C:/Morrowind/Data Files`:
+
+```powershell
+blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_chest_nif.py
+blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_head_nif.py
+blender --background --python tools/build_invisible_stubs.py
+blender --background --python tools/build_invisible_1st_person.py
+node tools/build_esp.mjs
+```
+
+Stub scripts need no `--addons` flag; they import `es3.nif` from the vendored `lib/` via `sys.path`.

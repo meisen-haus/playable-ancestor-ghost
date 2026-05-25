@@ -1,0 +1,36 @@
+---
+description: How Blender MCP is used in this project (local dev only, not in build pipeline)
+alwaysApply: true
+---
+
+# Blender MCP in playable-ancestor-ghost
+
+MCP is an **optional local dev aid** for inspecting or driving Blender from Cursor. It is **not** part of the mod runtime or mesh build pipeline.
+
+## What we use
+
+- **Cursor MCP config**: `.cursor/mcp.json` (local, gitignored). Runs the PyPI server:
+  ```json
+  { "mcpServers": { "blender": { "command": "cmd", "args": ["/c", "uvx", "blender-mcp"] } } }
+  ```
+- **Blender side**: Install the [Blender MCP](https://github.com/ahujasid/blender-mcp) add-on in Blender (Extensions or manual install). Enable it and start the MCP server (default **localhost:9876**).
+
+Do **not** vendor `blender_mcp_addon.py` into this repo. Do **not** commit `.cursor/mcp.json`.
+
+## What MCP is for here
+
+- Scene inspection (`get_scene_info`, object names, mesh stats) while tuning `ancestor_ghost.blend`
+- Ad-hoc Blender Python when iterating on alignment/weights
+- Debugging export issues alongside the agent
+
+## What MCP is NOT for
+
+- Producing release NIFs or `ancestor_ghost.omwaddon` — use the CLI build commands in `.cursor/rules/vendored-tools.mdc`
+- Replacing or installing `io_scene_mw` — the repo vendored copy is the only exporter for builds (see that rule)
+
+## Agent guidance
+
+- Prefer CLI build scripts over MCP for reproducible mesh changes
+- If MCP is unavailable, use `--python-expr` / `--python` with `ancestor_ghost.blend` directly
+- Never add third-party MCP add-on source or API keys to the repository
+- Never install io_scene_mw from GitHub/pip during agent runs; use `tools/downloads/io_scene_mw/`
