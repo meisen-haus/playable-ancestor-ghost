@@ -4,11 +4,6 @@ local types = require('openmw.types')
 local config = require('scripts.ancestor_ghost.config')
 local playerSettings = require('scripts.ancestor_ghost.player_settings')
 
-local function isAncestorGhost(player)
-  local rec = types.NPC.record(player)
-  return rec and rec.race == config.RACE_ID
-end
-
 local function stripLegacySpells(player)
   local spells = types.Actor.spells(player)
   for _, spellId in ipairs(config.LEGACY_GHOSTLY_NATURE_SPELLS) do
@@ -62,8 +57,12 @@ local function disableWraith(player)
   end
 end
 
+-- Returns true when no further apply retries are needed.
 local function applyToPlayer(player, settings)
-  if not isAncestorGhost(player) then return false end
+  local rec = types.NPC.record(player)
+  if not rec then return false end
+  if rec.race ~= config.RACE_ID then return true end
+
   stripLegacySpells(player)
   settings = settings or playerSettings.readFromStorage()
   applyGhostlyNature(player, settings.normalWeaponsImmunity)
@@ -72,7 +71,10 @@ local function applyToPlayer(player, settings)
   else
     disableWraith(player)
   end
-  return true
+
+  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[settings.normalWeaponsImmunity]
+    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+  return types.Actor.spells(player)[target] ~= nil
 end
 
 return {

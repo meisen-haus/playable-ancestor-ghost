@@ -20,7 +20,8 @@ local settingsSubscribed = false
 local balanceSynced = false
 
 local function applyBalance(notify)
-  if not balance.applyToPlayer(self) then return end
+  if not balance.applyToPlayer(self) then return false end
+  balanceSynced = true
   if notify then
     local s = playerSettings.readFromStorage()
     if s.wraith then
@@ -29,6 +30,7 @@ local function applyBalance(notify)
       ui.showMessage('Ancestor Ghost options applied.')
     end
   end
+  return true
 end
 
 local function ensureSettingsSubscription()
@@ -43,13 +45,13 @@ return {
   engineHandlers = {
     onLoad = function()
       tutorialShown = playerStore:get(STORE_TUTORIAL) or false
+      playerSettings.ensureDefaults()
       ensureSettingsSubscription()
       applyBalance(false)
     end,
 
     onFrame = function()
       if balanceSynced then return end
-      balanceSynced = true
       ensureSettingsSubscription()
       applyBalance(false)
     end,

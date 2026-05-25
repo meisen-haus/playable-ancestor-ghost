@@ -5,10 +5,20 @@ local config = require('scripts.ancestor_ghost.config')
 local M = {}
 
 local function snapImmunity(value)
-  local v = tonumber(value) or 100
+  local fallback = config.settingDefaults.normalWeaponsImmunity
+  local v = tonumber(value) or fallback
   if v <= 0 then return 0 end
   if v <= 50 then return 50 end
   return 100
+end
+
+function M.ensureDefaults()
+  local section = storage.playerSection(config.settingsGroupKey)
+  for key, value in pairs(config.settingDefaults) do
+    if section:get(key) == nil then
+      section:set(key, value)
+    end
+  end
 end
 
 function M.readFromStorage()
