@@ -2,7 +2,7 @@
 /**
  * Builds ancestor_ghost.omwaddon containing:
  *   - 2×  SPEL records  (ag_ghostly_nature ability, ag_ghost_curse spell)
- *   - BODY records      (vanilla Dunmer meshes; head/hair variants for char gen)
+ *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
  *
  * Run: node tools/build_esp.mjs
@@ -45,50 +45,46 @@ const DUNMER_SKIN = {
   UpperLeg : { m: 'b\\B_N_Dark Elf_M_Upper Leg.NIF', f: 'b\\B_N_Dark Elf_F_Upper Leg.nif' },
 };
 
+// Invisible leg stubs (Meshes/ag/); unisex paths for smoke-test / future ghost mesh work.
+const AG_LEG = {
+  Foot     : { m: 'ag\\ag_foot.nif',     f: 'ag\\ag_foot.nif' },
+  Ankle    : { m: 'ag\\ag_ankle.nif',    f: 'ag\\ag_ankle.nif' },
+  Knee     : { m: 'ag\\ag_knee.nif',     f: 'ag\\ag_knee.nif' },
+  UpperLeg : { m: 'ag\\ag_upperleg.nif', f: 'ag\\ag_upperleg.nif' },
+};
+
+// Invisible arm stubs — full vanilla geometry with alpha=0 (see tools/build_invisible_stubs.py).
+const AG_ARM = {
+  Wrist    : { m: 'ag\\ag_wrist.nif',    f: 'ag\\ag_wrist.nif' },
+  Forearm  : { m: 'ag\\ag_forearm.nif',  f: 'ag\\ag_forearm.nif' },
+  UpperArm : { m: 'ag\\ag_upperarm.nif', f: 'ag\\ag_upperarm.nif' },
+};
+
+const AG_NECK = { m: 'ag\\ag_neck.nif', f: 'ag\\ag_neck.nif' };
+const AG_GROIN = { m: 'ag\\ag_groin.nif', f: 'ag\\ag_groin.nif' };
+
+// Ghost torso + hands (Chest/Hand slots share ag_chest.nif like vanilla Skins.nif).
+const AG_CHEST = { m: 'ag\\ag_chest.nif', f: 'ag\\ag_chest.nif' };
+
+const AG_SKIN = {
+  ...DUNMER_SKIN,
+  Neck: AG_NECK,
+  Groin: AG_GROIN,
+  Chest: AG_CHEST,
+  Hand: AG_CHEST,
+  ...AG_ARM,
+  ...AG_LEG,
+};
+
+// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk; chest stays rigid).
 const HEAD_VARIANTS = {
-  m: [
-    'b\\B_N_Dark Elf_M_Head_01.NIF',
-    'b\\B_N_Dark Elf_M_Head_02.NIF',
-    'b\\B_N_Dark Elf_M_Head_03.NIF',
-    'b\\B_N_Dark Elf_M_Head_04.NIF',
-    'b\\B_N_Dark Elf_M_Head_05.nif',
-    'b\\B_N_Dark Elf_M_Head_06.nif',
-    'b\\B_N_Dark Elf_M_Head_07.nif',
-    'b\\B_N_Dark Elf_M_Head_08.nif',
-  ],
-  f: [
-    'b\\B_N_Dark Elf_F_Head_01.nif',
-    'b\\B_N_Dark Elf_F_Head_02.nif',
-    'b\\B_N_Dark Elf_F_Head_03.nif',
-    'b\\B_N_Dark Elf_F_Head_04.nif',
-    'b\\B_N_Dark Elf_F_Head_05.nif',
-    'b\\B_N_Dark Elf_F_Head_06.nif',
-    'b\\B_N_Dark Elf_F_Head_07.nif',
-    'b\\B_N_Dark Elf_F_Head_08.nif',
-  ],
+  m: ['ag\\ag_head.nif'],
+  f: ['ag\\ag_head.nif'],
 };
 
 const HAIR_VARIANTS = {
-  m: [
-    'b\\B_N_Dark Elf_M_Hair_01.NIF',
-    'b\\B_N_Dark Elf_M_Hair_02.NIF',
-    'b\\B_N_Dark Elf_M_Hair_03.NIF',
-    'b\\B_N_Dark Elf_M_Hair_04.nif',
-    'b\\B_N_Dark Elf_M_Hair_05.nif',
-    'b\\B_N_Dark Elf_M_Hair_06.nif',
-    'b\\B_N_Dark Elf_M_Hair_07.nif',
-    'b\\B_N_Dark Elf_M_Hair_08.nif',
-  ],
-  f: [
-    'b\\B_N_Dark Elf_F_Hair_01.nif',
-    'b\\B_N_Dark Elf_F_Hair_02.nif',
-    'b\\B_N_Dark Elf_F_Hair_03.nif',
-    'b\\B_N_Dark Elf_F_Hair_04.nif',
-    'b\\B_N_Dark Elf_F_Hair_05.nif',
-    'b\\B_N_Dark Elf_F_Hair_06.nif',
-    'b\\B_N_Dark Elf_F_Hair_07.nif',
-    'b\\B_N_Dark Elf_F_Hair_08.nif',
-  ],
+  m: ['ag\\ag_hair.nif'],
+  f: ['ag\\ag_hair.nif'],
 };
 
 // OpenMW ESM::BodyPart::MeshPart indices (not armor biped slots).
@@ -242,13 +238,13 @@ function buildVariantBodyRecords(partIndex, genderKey, idPrefix, meshes) {
   return records;
 }
 
-// Build all BODY records: vanilla Dunmer skin + head/hair variants for char gen.
+// Build all BODY records: Dunmer skin (ag\ leg stubs) + head/hair variants for char gen.
 function buildAllBodyRecords() {
   const records = [];
 
   for (const [name, idx] of Object.entries(PART)) {
     if (name === 'Head' || name === 'Hair') continue;
-    const skin = DUNMER_SKIN[name];
+    const skin = AG_SKIN[name];
     records.push(buildBodyRecord(`ag_${name.toLowerCase()}_m`, idx, false, skin.m));
     records.push(buildBodyRecord(`ag_${name.toLowerCase()}_f`, idx, true, skin.f));
   }
@@ -318,7 +314,7 @@ function buildRaceRecord() {
 // ---------------------------------------------------------------------------
 // Assemble plugin
 // ---------------------------------------------------------------------------
-const bodyRecords  = buildAllBodyRecords();            // 20 skin + 32 head/hair = 54 BODY
+const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 hair = 26 BODY
 const CONTENT_RECORDS = 2 + bodyRecords.length + 1;   // spells + bodies + race
 
 const allRecords = [
@@ -343,8 +339,15 @@ const required = [
   ['Ancestor Ghost',             'Race display name'],
   ['ag_head_m_01',               'Male head body part ID'],
   ['ag_head_f_01',               'Female head body part ID'],
-  ['B_N_Dark Elf_M_Head_01',     'Vanilla Dunmer head mesh path'],
-  ['B_N_Dark Elf_M_Skins.NIF',   'Vanilla Dunmer chest mesh path'],
+  ['ag_hair_m_01',               'Male hair body part ID'],
+  ['ag_hair_f_01',               'Female hair body part ID'],
+  ['ag\\ag_head.nif',            'Ghost head mesh (morpher, Head-bone attach)'],
+  ['ag\\ag_neck.nif',             'Invisible neck stub mesh path'],
+  ['ag\\ag_groin.nif',            'Invisible groin stub mesh path'],
+  ['ag\\ag_chest.nif',            'Ghost chest/hand mesh path'],
+  ['ag\\ag_wrist.nif',            'Invisible arm stub mesh path'],
+  ['ag\\ag_foot.nif',            'Invisible leg stub mesh path'],
+  ['ag\\ag_hair.nif',            'Invisible hair stub mesh path'],
   ['Ancestor Ghost is an undead','Race description'],
 ];
 
