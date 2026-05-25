@@ -1,18 +1,57 @@
--- ancestor_ghost/player.lua
--- PLAYER script: one-time tutorial when a locked equipment slot is blocked.
--- Racial spells (Ghostly Nature, Ghost Curse) come from the RACE record in the ESP.
+-- PLAYER script: settings UI, tutorial message, balance on load / option changes.
 
-local ui      = require('openmw.ui')
+local ui = require('openmw.ui')
 local storage = require('openmw.storage')
+local async = require('openmw.async')
+local self = require('openmw.self')
+local config = require('scripts.ancestor_ghost.config')
+local settings = require('scripts.ancestor_ghost.settings')
+local balance = require('scripts.ancestor_ghost.balance')
+local playerSettings = require('scripts.ancestor_ghost.player_settings')
 
-local playerStore    = storage.playerSection('AncestorGhost')
+pcall(settings.registerPage)
+pcall(settings.registerGroup)
+
+local playerStore = storage.playerSection('AncestorGhost')
+local modSettings = storage.playerSection(config.settingsGroupKey)
 local STORE_TUTORIAL = 'ag_tutorial_shown'
-local tutorialShown  = false
+local tutorialShown = false
+local settingsSubscribed = false
+local balanceSynced = false
+
+local function applyBalance(notify)
+  if not balance.applyToPlayer(self) then return end
+  if notify then
+    local s = playerSettings.readFromStorage()
+    if s.wraith then
+      ui.showMessage('Wraith kit enabled (Grave Curse, Bonebiter, Wraith ability).')
+    else
+      ui.showMessage('Ancestor Ghost options applied.')
+    end
+  end
+end
+
+local function ensureSettingsSubscription()
+  if settingsSubscribed then return end
+  settingsSubscribed = true
+  modSettings:subscribe(async:callback(function(_section, _key)
+    applyBalance(true)
+  end))
+end
 
 return {
   engineHandlers = {
     onLoad = function()
       tutorialShown = playerStore:get(STORE_TUTORIAL) or false
+      ensureSettingsSubscription()
+      applyBalance(false)
+    end,
+
+    onFrame = function()
+      if balanceSynced then return end
+      balanceSynced = true
+      ensureSettingsSubscription()
+      applyBalance(false)
     end,
   },
 

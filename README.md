@@ -11,7 +11,7 @@ Ancestor Ghosts are incorporeal undead. They **cannot equip weapons, armour, or 
 Racial effects from **Ghostly Nature** (constant ability):
 
 - Chameleon 50%
-- Resist Normal Weapons 100%
+- Resist Normal Weapons 100% (default; configurable in Scripts)
 - Resist Frost 100%
 - Resist Poison 100%
 - Fortify Maximum Magicka 3× Intelligence (same mechanic as The Mage birthsign, but +2.0 multiplier like The Atronach instead of +0.5)
@@ -53,6 +53,22 @@ Values in the race record are **starting attributes** (same scheme as vanilla ra
 | Alteration | +10 |
 | Conjuration | +10 |
 
+### Mod settings
+
+Under **Options → Scripts → Ancestor Ghost** (changes apply when you toggle them; short on-screen confirmation):
+
+- **Wraith of Sul-Senipul** (default off) — optional Grave Curse spells, Bonebiter, and Wraith ability.
+- **Normal Weapons Immunity** (default 100%) — 100%, 50%, or none; swaps which **Ghostly Nature** ability you have (three ESP records, one active at a time).
+
+**How to verify in-game (Ancestor Ghost character):**
+
+| Setting | What to check |
+|---|---|
+| Wraith of Sul-Senipul **on** | Magic menu gains **Wraith** (ability), **Grave Curse: Fatigue/Strength**, **Bonebiter** |
+| Wraith **off** | Those entries are removed |
+| Normal Weapons **None** | **Ghostly Nature** ability without resist normal weapons; iron weapons hurt |
+| Normal Weapons **50%** / **100%** | **Ghostly Nature** with that resist; test damage from a normal weapon |
+
 ### Equipment restriction
 
 Locked slots (enforced by Lua every 0.25s): helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe, both hands, ammunition. **Rings and amulets** are allowed.
@@ -75,9 +91,12 @@ Locked slots (enforced by Lua every 0.25s): helmet, cuirass, greaves, boots, pau
    - `ancestor_ghost.omwscripts`
    - `ancestor_ghost.omwaddon`
    - `scripts/`
+   - `l10n/`
 3. Open **OpenMW Launcher** → **Data Files** → enable the folder.
-4. Enable **`ancestor_ghost.omwaddon`** after `Morrowind.esm`.
-5. Launch the game and select **Ancestor Ghost** at character creation.
+4. Enable **`ancestor_ghost.omwaddon`** and **`ancestor_ghost.omwscripts`** (both are required; the addon is the race, the scripts file is Lua).
+5. Put **`ancestor_ghost.omwaddon`** after `Morrowind.esm` in load order.
+6. Launch the game. Mod options are under **Options → Scripts → Ancestor Ghost** (pause menu or main menu with a save loaded). Settings are per save; changes apply when you toggle them (you should see a short confirmation message).
+7. Select **Ancestor Ghost** at character creation.
 
 To rebuild the plugin after editing `tools/build_esp.mjs`:
 
