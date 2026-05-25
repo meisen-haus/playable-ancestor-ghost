@@ -42,7 +42,7 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 | Wraith of Sul-Senipul | off | Adds spells Grave Curse: Fatigue/Strength, Bonebiter, and ability Wraith (+25 Endurance, 100% resist shock) |
 | Normal Weapons Immunity | 100% | Swaps which **Ghostly Nature** ability is granted (`ag_ghostly_nature_100` / `_50` / `_0`) |
 
-Rebuild `ancestor_ghost.omwaddon` if Ghostly Nature still lists 100% resist in the CS — that line was removed from the ability record.
+Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 
 **`ancestor_ghost.omwscripts` must be enabled** in the launcher (separate checkbox from the `.omwaddon`).
 

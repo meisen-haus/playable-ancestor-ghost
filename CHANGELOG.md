@@ -6,21 +6,25 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- Playable **Ancestor Ghost** race (`ancestor_ghost`) in `ancestor_ghost.omwaddon`
-- Racial ability **Ghostly Nature**: Chameleon 50%, Resist Normal Weapons / Frost / Poison 100%
-- Starting spell **Ghost Curse** (touch; drain endurance/fatigue, damage health)
-- **54 BODY** records using vanilla Dunmer meshes (8 head + 8 hair variants per gender)
-- OpenMW Lua (`.omwscripts`): equipment enforcement on **15 slots**, one-time tutorial message
-- `tools/build_esp.mjs` to regenerate the plugin with correct OpenMW magic effect indices
-- Developer docs: [ANCESTOR_GHOST_DEV.md](ANCESTOR_GHOST_DEV.md), [NIF_PRODUCTION.md](NIF_PRODUCTION.md)
+- **[PLAYERS.md](PLAYERS.md)** — player-focused install, settings, and troubleshooting guide
+- Mod settings (**Options → Scripts → Ancestor Ghost**): Wraith of Sul-Senipul, Normal Weapons Immunity
+- Three **Ghostly Nature** ability records (`_100` / `_50` / `_0`); Lua grants one matching the immunity setting
+- Wraith kit spells and **Wraith** ability (`ag_wraith_sul`: +25 Endurance, resist shock)
+- OpenMW Lua: `balance.lua`, `settings.lua`, per-save `playerSection` storage, live apply on setting change
+- `l10n/AncestorGhost/en.yaml` for settings UI strings
 
 ### Changed
 
-- Visual approach: Dunmer placeholder + Chameleon (replaces invisible body + VFX overlay)
-- Equipment lock includes **clothing** (shirt, pants, skirt, robe), not only armour and weapons
+- **Ghost Curse** magicka cost **9** (`SPDT` flags `0`; `F_Autocalc` was forcing ~40)
+- **README.md** shortened; player details moved to **PLAYERS.md**
+- Ghostly Nature no longer on race `NPCS` (Lua grants the correct variant)
 
 ### Removed
 
-- Lua racial spell guard / save migration (racial effects are ESP-only)
-- Race-change detection in `global.lua`
-- Invisible-body / VFX-overlay approach and `tools/build_nif.mjs`
+- `activeEffects` hacks for normal-weapons immunity (replaced by spell swap)
+- Stale dev-only wording from main README
+
+## [Earlier]
+
+- Playable **Ancestor Ghost** race, **Ghostly Nature**, **Ghost Curse**, segmented BODY meshes, equipment Lua
+- See git history on `main` / `balance` for mesh pipeline and stat tuning commits

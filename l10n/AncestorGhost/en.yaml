@@ -1,30 +1,15 @@
 AncestorGhost: "Ancestor Ghost"
-
 settingsPageDescription: "Playable Ancestor Ghost race options. Changes apply when you change a setting (confirmation message on screen)."
 
-
-
 modSettings: "Ancestor Ghost"
-
 modSettingsDescription: "Balance and optional wraith kit."
 
-
-
 wraithOfSulSenipul: "Wraith of Sul-Senipul"
-
 wraithOfSulSenipulDescription: "Grants Grave Curse spells, Bonebiter, and the Wraith ability (+25 Endurance, 100% resist shock)."
 
-
-
 normalWeaponsImmunity: "Normal Weapons Immunity"
-
 normalWeaponsImmunityDescription: "Which Ghostly Nature ability you have (100%, 50%, or no resist normal weapons)."
 
-
-
 '100': '100%'
-
 '50': '50%'
-
 '0': 'None'
-
