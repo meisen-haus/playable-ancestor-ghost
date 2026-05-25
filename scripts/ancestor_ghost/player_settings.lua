@@ -12,15 +12,6 @@ local function snapImmunity(value)
   return 100
 end
 
-function M.ensureDefaults()
-  local section = storage.playerSection(config.settingsGroupKey)
-  for key, value in pairs(config.settingDefaults) do
-    if section:get(key) == nil then
-      section:set(key, value)
-    end
-  end
-end
-
 function M.readFromStorage()
   local section = storage.playerSection(config.settingsGroupKey)
   return {

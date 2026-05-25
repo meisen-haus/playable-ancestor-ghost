@@ -13,7 +13,6 @@ pcall(settings.registerPage)
 pcall(settings.registerGroup)
 
 local playerStore = storage.playerSection('AncestorGhost')
-local modSettings = storage.playerSection(config.settingsGroupKey)
 local STORE_TUTORIAL = 'ag_tutorial_shown'
 local tutorialShown = false
 local settingsSubscribed = false
@@ -36,24 +35,37 @@ end
 local function ensureSettingsSubscription()
   if settingsSubscribed then return end
   settingsSubscribed = true
+  local modSettings = storage.playerSection(config.settingsGroupKey)
   modSettings:subscribe(async:callback(function(_section, _key)
     applyBalance(true)
   end))
 end
 
+local function trySyncBalance(notify)
+  ensureSettingsSubscription()
+  applyBalance(notify)
+end
+
 return {
   engineHandlers = {
+    -- New saves call onInit (not onLoad). onActive fires when the player is in the world.
+    onInit = function()
+      trySyncBalance(false)
+    end,
+
     onLoad = function()
       tutorialShown = playerStore:get(STORE_TUTORIAL) or false
-      playerSettings.ensureDefaults()
-      ensureSettingsSubscription()
-      applyBalance(false)
+      trySyncBalance(false)
+    end,
+
+    onActive = function()
+      balanceSynced = false
+      trySyncBalance(false)
     end,
 
     onFrame = function()
       if balanceSynced then return end
-      ensureSettingsSubscription()
-      applyBalance(false)
+      trySyncBalance(false)
     end,
   },
 
