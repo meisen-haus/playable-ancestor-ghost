@@ -1,0 +1,72 @@
+# Build ancestor_ghost.omwaddon and attach release assets when a release is published.
+name: Release build
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name for the zip filename (e.g. 0.2.0). Ignored when triggered by a published release.'
+        required: true
+        default: 'manual'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          check-latest: true
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build plugin
+        run: node tools/build_esp.mjs
+
+      - name: Verify plugin output
+        run: test -f ancestor_ghost.omwaddon
+
+      - name: Package mod zip
+        run: |
+          VERSION="${{ steps.version.outputs.tag }}"
+          STAGING="dist/playable-ancestor-ghost"
+          mkdir -p "$STAGING"
+          cp ancestor_ghost.omwscripts ancestor_ghost.omwaddon README.md PLAYERS.md CHANGELOG.md LICENSE "$STAGING/"
+          cp -r scripts l10n Meshes Textures "$STAGING/"
+          mkdir -p dist
+          (cd dist && zip -r "playable-ancestor-ghost-${VERSION}.zip" playable-ancestor-ghost)
+          ls -la dist/
+          test -f "dist/playable-ancestor-ghost-${VERSION}.zip"
+
+      - name: Upload release assets
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ancestor_ghost.omwaddon
+            dist/playable-ancestor-ghost-${{ steps.version.outputs.tag }}.zip
+
+      - name: Upload workflow artifacts (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playable-ancestor-ghost-${{ steps.version.outputs.tag }}
+          path: |
+            ancestor_ghost.omwaddon
+            dist/playable-ancestor-ghost-${{ steps.version.outputs.tag }}.zip

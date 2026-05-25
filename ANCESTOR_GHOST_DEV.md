@@ -26,6 +26,8 @@ playable-ancestor-ghost/
 
 Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 8 SPEL + 1 RACE.
 
+**Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml) (rebuilds `ancestor_ghost.omwaddon`, zips the playable mod folder). Manual test: Actions → Release build → Run workflow.
+
 ## Mod settings (Options → Scripts → Ancestor Ghost)
 
 Same pattern as [spreadable-corprus](../spreadable-corprus): `settings.lua` registers page/group from **`player.lua`** via `pcall(settings.registerPage)` / `pcall(settings.registerGroup)`. Display strings are **l10n keys** in `l10n/AncestorGhost/en.yaml`. Storage uses `storage.playerSection('SettingsAncestorGhost')` with `permanentStorage = false` (per save).
