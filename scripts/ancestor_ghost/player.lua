@@ -22,12 +22,7 @@ local function applyBalance(notify)
   if not balance.applyToPlayer(self) then return false end
   balanceSynced = true
   if notify then
-    local s = playerSettings.readFromStorage()
-    if s.wraith then
-      ui.showMessage('Wraith kit enabled (Grave Curse, Bonebiter, Wraith ability).')
-    else
-      ui.showMessage('Ancestor Ghost options applied.')
-    end
+    ui.showMessage('Ancestor Ghost options applied.')
   end
   return true
 end

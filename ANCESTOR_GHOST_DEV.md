@@ -24,7 +24,7 @@ playable-ancestor-ghost/
 └── .cursor/rules/              # Agent guidance (MCP, vendored io_scene_mw)
 ```
 
-Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 8 SPEL + 1 RACE.
+Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 8 SPEL + 1 RACE + 1 BSGN.
 
 **Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It rebuilds `ancestor_ghost.omwaddon` and attaches **one zip** (`ancestor-ghost-<tag>.zip`) containing the full mod folder (`ancestor-ghost/`: `.omwaddon`, `.omwscripts`, `scripts/`, `l10n/`, `Meshes/`, `Textures/`, docs). Manual test: Actions → Release build → Run workflow.
 
@@ -41,8 +41,9 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 
 | Setting | Default | Effect |
 |---|---|---|
-| Wraith of Sul-Senipul | off | Adds spells Grave Curse: Fatigue/Strength, Bonebiter, and ability Wraith (+25 Endurance, 100% resist shock) |
 | Normal Weapons Immunity | 100% | Swaps which **Ghostly Nature** ability is granted (`ag_ghostly_nature_100` / `_50` / `_0`) |
+
+**Bonebiter birthsign** (`ag_sign_bonebiter`): at character creation, grants `ag_wraith_sul`, Grave Curse spells, and **Bonebiter** (replaces the old wraith mod-setting toggle).
 
 Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 
@@ -71,6 +72,10 @@ Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
 Three records, same display name **Ghostly Nature**: `ag_ghostly_nature_100`, `ag_ghostly_nature_50`, `ag_ghostly_nature_0`. Shared effects: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. Only the 100% and 50% records include Resist Normal Weapons at that magnitude; the 0% record omits it. The race does **not** list any variant on `NPCS` — `balance.lua` removes the other two and `spells:add`s the one matching **Normal Weapons Immunity**. Legacy `ag_ghostly_nature` and `ag_immunity_norm_*` are stripped on apply.
 
+### BSGN: `ag_sign_bonebiter` (Bonebiter)
+
+Display name **Bonebiter**. Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance, 100% resist shock), `ag_wraith_grave_fatigue`, `ag_wraith_grave_strength`, `ag_wraith_bonebiter`. Replaces the former **Wraith of Sul-Senipul** mod-setting toggle.
+
 ### SPEL: `ag_ghost_curse` (touch spell)
 
 Drain Endurance 5, Drain Fatigue 10, Damage Health 1–10. **Magicka cost 9** (`SPDT` cost `9`, **flags `0`**). Do not set `F_Autocalc` (`flags 0x1`) — OpenMW then ignores the cost field and recalculates ~40 like vanilla `Ghost Curse`.
@@ -90,7 +95,7 @@ Each BODY: `NAME`, `MODL`, `FNAM` (`ancestor_ghost`), `BYDT`.
 Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 
 - `settings.lua` + `player.lua` — register mod settings page (player script only).
-- `balance.lua` / `player_settings.lua` — wraith kit + normal-weapons immunity from player storage.
+- `balance.lua` / `player_settings.lua` — normal-weapons immunity from player storage.
 - `global.lua` — unequips locked slots every 0.25 s for `ancestor_ghost` race.
 - `player.lua` — tutorial on equip block; applies balance on first frame and when settings change.
 
