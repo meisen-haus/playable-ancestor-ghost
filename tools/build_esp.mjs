@@ -17,21 +17,21 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, '..', 'ancestor_ghost.omwaddon');
 
 // ---------------------------------------------------------------------------
-// Effect IDs — ENAM stores OpenMW MagicEffect indices (sMagicEffectIds in
-// loadmgef.cpp), NOT legacy editor effect numbers.
-// ---------------------------------------------------------------------------
+// Effect IDs = OpenMW sMagicEffectIds indices (components/esm3/loadmgef.cpp).
+// Resist: 91 Frost, 94 CommonDisease, 97 Poison, 98 NormalWeapons (96 is Corprus — do not use).
 const FX = {
-  LEVITATE              : 10, // Levitate (constant on Ghostly Nature)
-  CHAMELEON             : 40, // Chameleon (OpenMW sMagicEffectIds index; 41 is Light)
-  RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons (vanilla resist fire_75 uses 90)
-  RESIST_FROST          : 91, // ResistFrost (Ghostly Nature)
+  WATER_BREATHING       :  0, // WaterBreathing
+  LEVITATE              : 10, // Levitate
+  CHAMELEON             : 40, // Chameleon
+  RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons
+  RESIST_FROST          : 91, // ResistFrost
   RESIST_SHOCK          : 92, // ResistShock (Wraith)
   RESIST_COMMON_DISEASE : 94, // ResistCommonDisease
   RESIST_POISON         : 97, // ResistPoison
   DRAIN_ATTRIBUTE       : 17, // DrainAttribute
   DRAIN_FATIGUE         : 20, // DrainFatigue
   DAMAGE_HEALTH         : 23, // DamageHealth
-  FORTIFY_MAX_MAGICKA   : 84, // FortifyMaximumMagicka (M/10 adds to INT multiplier; 20 → 3× INT)
+  FORTIFY_MAX_MAGICKA   : 84, // FortifyMaximumMagicka
   FORTIFY_ATTRIBUTE     : 79, // FortifyAttribute (Wraith: +25 Endurance)
   DAMAGE_ATTRIBUTE      : 22, // DamageAttribute (Bonebiter)
 };
@@ -111,6 +111,11 @@ const PART = {
 };
 
 const RACE_ID = 'ancestor_ghost';
+
+// Fortify Maximum Magicka: magnitude / 10 is the INT multiplier bonus (UI text).
+// Magnitude 30 → +3.0× INT on the effect, 4× INT total max magicka (base 1.0 + 3.0).
+const GHOSTLY_MAGICKA_BONUS_MULT = 3.0;
+const GHOSTLY_MAGICKA_MULT_MAG = Math.round(GHOSTLY_MAGICKA_BONUS_MULT * 10);
 
 // Body part type: 0=skin, 1=clothing, 2=armor
 const BPTYPE = 0; // skin
@@ -196,10 +201,11 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 // ---------------------------------------------------------------------------
 function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate, withDiseaseResist) {
   const enams = [
+    subrecord('ENAM', enam({ effectId: FX.WATER_BREATHING,     duration: 0, magMin: 1,   magMax: 1   })),
     subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
-    subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: 20,  magMax: 20  })),
+    subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: GHOSTLY_MAGICKA_MULT_MAG, magMax: GHOSTLY_MAGICKA_MULT_MAG })),
   ];
   if (withDiseaseResist) {
     enams.push(
@@ -388,7 +394,7 @@ function buildRaceRecord() {
     subrecord('NPCS', padId('ag_ghostly_nature_100_ground_dis')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
-      'Spectral and untouchable by mundane weapons, they cannot wield physical arms or don ' +
+      'Spectral and resistant to mundane weapons, they cannot wield physical arms or don ' +
       'armour, relying instead on ancient magic and incorporeal resilience. Their touch drains ' +
       'the living, and frost and poison pass through them like wind through smoke.'
     )),
@@ -403,7 +409,7 @@ function buildRaceRecord() {
 function buildBonebiterBirthsign() {
   return record('BSGN', [
     subrecord('NAME', zstring('ag_sign_bonebiter')),
-    subrecord('FNAM', zstring('Bonebiter')),
+    subrecord('FNAM', zstring('The Bonebiter')),
     subrecord('TNAM', zstring('Birthsigns\\Tx_birth_bonebiter.tga')),
     subrecord('DESC', zstring(
       'Born under the wraith-star of Sul-Senipul, you are a tomb-bound hunger that gnaws at bone and sinew. ' +
@@ -591,6 +597,11 @@ for (const [id, resist, withLevitate, withDiseaseResist] of [
       console.error(`validation FAILED: ${id} resist normal weapons ENAM`, enams);
       ok = false;
     }
+    const resistPoison = enams.find((c) => c.e === FX.RESIST_POISON);
+    if (!resistPoison || resistPoison.mag !== 100) {
+      console.error(`validation FAILED: ${id} missing resist poison ENAM`, enams);
+      ok = false;
+    }
     const commonDis = enams.find((c) => c.e === FX.RESIST_COMMON_DISEASE);
     if (withDiseaseResist) {
       if (!commonDis || commonDis.mag !== 100) {
@@ -599,6 +610,21 @@ for (const [id, resist, withLevitate, withDiseaseResist] of [
       }
     } else if (commonDis) {
       console.error(`validation FAILED: ${id} should omit common disease resist ENAM`, enams);
+      ok = false;
+    }
+    const corprus = enams.find((c) => c.e === 96);
+    if (corprus) {
+      console.error(`validation FAILED: ${id} must not include resist corprus (ENAM 96)`, enams);
+      ok = false;
+    }
+    const waterBreathing = enams.find((c) => c.e === FX.WATER_BREATHING);
+    if (!waterBreathing || waterBreathing.mag !== 1) {
+      console.error(`validation FAILED: ${id} missing water breathing ENAM`, enams);
+      ok = false;
+    }
+    const fortifyMaxMagicka = enams.find((c) => c.e === FX.FORTIFY_MAX_MAGICKA);
+    if (!fortifyMaxMagicka || fortifyMaxMagicka.mag !== GHOSTLY_MAGICKA_MULT_MAG) {
+      console.error(`validation FAILED: ${id} fortify max magicka ENAM (expected ${GHOSTLY_MAGICKA_MULT_MAG} for +${GHOSTLY_MAGICKA_BONUS_MULT}× INT)`, enams);
       ok = false;
     }
     break;

@@ -1,20 +1,23 @@
 AncestorGhost: "Ancestor Ghost"
-settingsPageDescription: "Playable Ancestor Ghost race options. Changes apply when you change a setting (confirmation message on screen)."
+settingsPageDescription: "Per-save options for the Ancestor Ghost race. Changes apply immediately (short on-screen confirmation)."
 
 modSettings: "Ancestor Ghost"
-modSettingsDescription: "Options for the Ghostly Nature ability and other balance tweaks."
+modSettingsDescription: "Ghostly Nature resistances and other balance options."
 
-normalWeaponsImmunity: "Normal Weapons Immunity"
-normalWeaponsImmunityDescription: "Ghostly Nature resist to normal weapons (100%, 50%, or none)."
+normalWeaponsImmunity: "Resistance to Normal Weapons"
+normalWeaponsImmunityDescription: "Ghostly Nature resistance to normal weapons (100%, 50%, or none)."
 
 commonDiseaseImmunity: "Common Disease Immunity"
-commonDiseaseImmunityDescription: "Ghostly Nature includes 100% resist to common disease."
+commonDiseaseImmunityDescription: "Ghostly Nature includes 100% resistance to common disease."
 
 ghostlyLevitate: "Levitation"
-ghostlyLevitateDescription: "Ghostly Nature includes constant Levitate 10 (requires Allow Levitation in OpenMW game settings)."
+ghostlyLevitateDescription: "Ghostly Nature includes Levitate 10 (requires Allow Levitation in OpenMW game settings)."
 
-undeadFriendly: "Undead are friendly"
-undeadFriendlyDescription: "Common tomb undead (skeletons, bonewalkers, ancestral ghosts, and similar) do not attack you. They may still fight back if you strike first."
+undeadFriendly: "Undead Are Friendly"
+undeadFriendlyDescription: "Tomb undead (skeletons, bonewalkers, ancestral ghosts, and similar) ignore you. They still fight back if you attack first."
+
+optionsApplied: "Ancestor Ghost options updated."
+equipBlocked: "An Ancestor Ghost cannot wear clothing, weapons, or armour."
 
 '100': '100%'
 '50': '50%'

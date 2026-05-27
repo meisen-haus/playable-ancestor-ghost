@@ -41,12 +41,12 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 
 | Setting | Default | Effect |
 |---|---|---|
-| Normal Weapons Immunity | 100% | Swaps **Ghostly Nature** resist-normal-weapons (`_*_{lev,ground}_{dis,nodis}` × 100 / 50 / 0) |
+| Resistance to Normal Weapons | 100% | Swaps **Ghostly Nature** resist-normal-weapons (`_*_{lev,ground}_{dis,nodis}` × 100 / 50 / 0) |
 | Common Disease Immunity | on | **Ghostly Nature** includes resist common disease |
 | Levitation | off | **Ghostly Nature** includes Levitate 10 |
 | Undead are friendly | off | Sets **Fight** to 0 on active creatures with CREA type **Undead** (skeletons, bonewalkers, ghosts, etc.); restores AI when turned off |
 
-**Bonebiter birthsign** (`ag_sign_bonebiter`): at character creation, grants `ag_wraith_sul`, Grave Curse spells, and **Bonebiter** (replaces the old wraith mod-setting toggle).
+**The Bonebiter** birthsign (`ag_sign_bonebiter`): at character creation, grants `ag_wraith_sul`, Grave Curse spells, and **Bonebiter** (replaces the old wraith mod-setting toggle).
 
 Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 
@@ -57,7 +57,7 @@ Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 - **Head:** morpher `ag\ag_head.nif` (NPC look-at / talk).
 - **Torso + hands:** rigid ghost robe + hands in `ag\ag_chest.nif`.
 - **Hidden flesh:** invisible stubs (neck, groin, arms, legs, hair) via NiAlphaProperty test NEVER.
-- **Look / movement:** Optional Levitate 10 and Chameleon 50% on **Ghostly Nature** (ESP; one of twelve immunity×levitate×disease variants).
+- **Look / movement:** Optional Levitate 10 and Chameleon 50% on **Ghostly Nature** (ESP; one of twelve resistance-to-normal-weapons × levitate × disease variants).
 
 **RACE flags:** `0x01` (Playable only). Do not set Beast Race (`0x02`) with biped heads.
 
@@ -73,11 +73,11 @@ Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
 ### SPEL: Ghostly Nature variants (Ability)
 
-Twelve records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}_{dis,nodis}`. Shared on all: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. `_*_lev_*` adds Levitate 10; `_*_ground_*` omits it. `_*_dis` adds Resist Common Disease 100; `_*_nodis` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_ground_dis`. `balance.lua` strips the other eleven and `spells:add`s the record matching all three mod settings. Wraith kit is granted via **Bonebiter** birthsign at character creation. Legacy spell IDs (including the six-variant `_lev` / `_ground` names without `_dis` / `_nodis`) are stripped on apply.
+Twelve records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}_{dis,nodis}`. Shared on all: Water Breathing, Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 30 (+3.0× INT, **4× INT** pool). ENAM resist indices: 91 Frost, 94 Common Disease, 97 Poison, 98 Normal Weapons (not 96 Corprus). `_*_lev_*` adds Levitate 10; `_*_ground_*` omits it. `_*_dis` adds Resist Common Disease 100; `_*_nodis` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_ground_dis`. `balance.lua` strips the other eleven and `spells:add`s the record matching all three mod settings. Wraith kit is granted via **The Bonebiter** birthsign at character creation. Legacy spell IDs (including the six-variant `_lev` / `_ground` names without `_dis` / `_nodis`) are stripped on apply.
 
-### BSGN: `ag_sign_bonebiter` (Bonebiter)
+### BSGN: `ag_sign_bonebiter` (The Bonebiter)
 
-Display name **Bonebiter**. Texture `Birthsigns\Tx_birth_bonebiter.tga` (256×128, same format as vanilla birthsigns). Rebuild: `node tools/build_bonebiter_birthsign_texture.mjs` (contrast + blue bow constellation lines on `tools/source/bonebiter_birthsign.png`, then scale).
+Display name **The Bonebiter**. Texture `Birthsigns\Tx_birth_bonebiter.tga` (256×128, same format as vanilla birthsigns). Rebuild: `node tools/build_bonebiter_birthsign_texture.mjs` (contrast + blue bow constellation lines on `tools/source/bonebiter_birthsign.png`, then scale).
 
 Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance, 100% resist shock), `ag_wraith_grave_fatigue`, `ag_wraith_grave_strength`, `ag_wraith_bonebiter`. Replaces the former **Wraith of Sul-Senipul** mod-setting toggle.
 
