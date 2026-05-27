@@ -20,6 +20,7 @@ const OUT = join(__dirname, '..', 'ancestor_ghost.omwaddon');
 // loadmgef.cpp), NOT legacy editor effect numbers.
 // ---------------------------------------------------------------------------
 const FX = {
+  LEVITATE              : 10, // Levitate (constant on Ghostly Nature)
   CHAMELEON             : 40, // Chameleon (OpenMW sMagicEffectIds index; 41 is Light)
   RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons (vanilla resist fire_75 uses 90)
   RESIST_FROST          : 91, // ResistFrost (Ghostly Nature)
@@ -193,6 +194,7 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 // ---------------------------------------------------------------------------
 function buildGhostlyNatureSpell(spellId, resistNormalWeapons) {
   const enams = [
+    subrecord('ENAM', enam({ effectId: FX.LEVITATE,            duration: 0, magMin: 10,  magMax: 10  })),
     subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
@@ -520,6 +522,11 @@ for (const [id, resist] of [
       }
     }
     if (spellId !== id) continue;
+    const lev = enams.find((c) => c.e === FX.LEVITATE);
+    if (!lev || lev.mag !== 10) {
+      console.error(`validation FAILED: ${id} levitate ENAM`, enams);
+      ok = false;
+    }
     const rnw = enams.find((c) => c.e === FX.RESIST_NORMAL_WEAPONS);
     if (resist === 0) {
       if (rnw) {

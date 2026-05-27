@@ -53,7 +53,7 @@ Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 - **Head:** morpher `ag\ag_head.nif` (NPC look-at / talk).
 - **Torso + hands:** rigid ghost robe + hands in `ag\ag_chest.nif`.
 - **Hidden flesh:** invisible stubs (neck, groin, arms, legs, hair) via NiAlphaProperty test NEVER.
-- **Look:** Chameleon 50% on **Ghostly Nature** (ESP; one of three immunity variants).
+- **Look / movement:** Levitate 10 and Chameleon 50% on **Ghostly Nature** (ESP; one of three immunity variants).
 
 **RACE flags:** `0x01` (Playable only). Do not set Beast Race (`0x02`) with biped heads.
 
@@ -69,7 +69,7 @@ Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
 ### SPEL: Ghostly Nature variants (Ability)
 
-Three records, same display name **Ghostly Nature**: `ag_ghostly_nature_100`, `ag_ghostly_nature_50`, `ag_ghostly_nature_0`. Shared effects: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. Only the 100% and 50% records include Resist Normal Weapons at that magnitude; the 0% record omits it. The race does **not** list any variant on `NPCS` — `balance.lua` removes the other two and `spells:add`s the one matching **Normal Weapons Immunity**. Legacy `ag_ghostly_nature` and `ag_immunity_norm_*` are stripped on apply.
+Three records, same display name **Ghostly Nature**: `ag_ghostly_nature_100`, `ag_ghostly_nature_50`, `ag_ghostly_nature_0`. Shared effects: Levitate 10 (constant), Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. Only the 100% and 50% records include Resist Normal Weapons at that magnitude; the 0% record omits it. The race does **not** list any variant on `NPCS` — `balance.lua` removes the other two and `spells:add`s the one matching **Normal Weapons Immunity**. Wraith kit is separate spells, not baked into these records — **no need for 6 combined-setting variants**. Legacy `ag_ghostly_nature` and `ag_immunity_norm_*` are stripped on apply.
 
 ### SPEL: `ag_ghost_curse` (touch spell)
 

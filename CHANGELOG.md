@@ -6,6 +6,7 @@ All notable changes to this project are documented here.
 
 ### Added
 
+- **Levitate 10** (constant) on all **Ghostly Nature** ability variants
 - **[PLAYERS.md](PLAYERS.md)** — player-focused install, settings, and troubleshooting guide
 - Mod settings (**Options → Scripts → Ancestor Ghost**): Wraith of Sul-Senipul, Normal Weapons Immunity
 - Three **Ghostly Nature** ability records (`_100` / `_50` / `_0`); Lua grants one matching the immunity setting

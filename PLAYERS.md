@@ -31,7 +31,7 @@ If options or equipment rules do nothing, the **scripts** file is probably not e
 Every Ancestor Ghost gets the following:
 
 - **Look:** Ghost head and robe; flesh slots hidden; Chameleon 50%.
-- **Ghostly Nature:** Constant ability. Resist to normal weapons depends on the immunity setting below.
+- **Ghostly Nature:** Constant ability with **Levitate** (magnitude 10) and Chameleon. Resist to normal weapons depends on the immunity setting below.
 - **Resists:** Frost and poison 100% (always).
 - **Magicka:** Fortify Maximum Magicka at **3× Intelligence** (similar to The Mage birthsign, with a stronger multiplier).
 - **Starting spell:** **Ghost Curse** (touch, **9** magicka): drains endurance and fatigue, damages health.
@@ -75,6 +75,7 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 
 ## Tips
 
+- **Levitation:** Ghostly Nature grants constant Levitate. In OpenMW, enable **Allow Levitation** under **Options → Game** (or in `settings.cfg`: `[Game]` `allow levitation = true`) if your install has it off by default.
 - **New character:** Pick Ancestor Ghost at creation. Existing saves need a race-change mod or a new game to use this race.
 - **Testing immunity:** At **None**, test with an iron weapon or an NPC who uses one. At **100%**, you should take no damage from normal weapons.
 - **After updating the mod:** Restart OpenMW and load your save so scripts and the plugin reload.
