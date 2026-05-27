@@ -47,6 +47,13 @@ function M.registerGroup()
         description = 'ghostlyLevitateDescription',
         default = config.settingDefaults.ghostlyLevitate,
       },
+      {
+        key = config.settingUndeadFriendlyKey,
+        renderer = 'checkbox',
+        name = 'undeadFriendly',
+        description = 'undeadFriendlyDescription',
+        default = config.settingDefaults.undeadFriendly,
+      },
     },
   })
 end

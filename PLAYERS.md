@@ -79,6 +79,10 @@ At character creation, choose the **Bonebiter** birthsign for the tomb-wraith ki
 
 Like vanilla birthsigns, these are granted at creation and stay on your spell list. Other birthsigns work as usual if you do not want this kit.
 
+### Undead are friendly (default: off)
+
+When enabled, common **undead** creatures in tombs and ruins (skeletons, bonewalkers, ancestral ghosts, and similar) will not attack you on sight. They can still fight back if you hit them first. Does not affect daedra, animals, or living NPCs.
+
 ## Equipment you cannot use
 
 Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe, weapons (both hands), and ammunition. If you try to equip any of these, the gear is unequipped and you may see a one-time tutorial message.

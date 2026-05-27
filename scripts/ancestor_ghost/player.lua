@@ -7,6 +7,7 @@ local self = require('openmw.self')
 local config = require('scripts.ancestor_ghost.config')
 local settings = require('scripts.ancestor_ghost.settings')
 local balance = require('scripts.ancestor_ghost.balance')
+local undeadFriendly = require('scripts.ancestor_ghost.undead_friendly_player')
 
 pcall(settings.registerPage)
 pcall(settings.registerGroup)
@@ -32,6 +33,7 @@ local function ensureSettingsSubscription()
   local modSettings = storage.playerSection(config.settingsGroupKey)
   modSettings:subscribe(async:callback(function(_section, _key)
     applyBalance(true)
+    undeadFriendly.syncToGlobal()
   end))
 end
 
@@ -45,21 +47,25 @@ return {
     -- New saves call onInit (not onLoad). onActive fires when the player is in the world.
     onInit = function()
       trySyncBalance(false)
+      undeadFriendly.syncToGlobal()
     end,
 
     onLoad = function()
       tutorialShown = playerStore:get(STORE_TUTORIAL) or false
       trySyncBalance(false)
+      undeadFriendly.syncToGlobal()
     end,
 
     onActive = function()
       balanceSynced = false
       trySyncBalance(false)
+      undeadFriendly.syncToGlobal()
     end,
 
     onFrame = function()
-      if balanceSynced then return end
-      trySyncBalance(false)
+      if not balanceSynced then
+        trySyncBalance(false)
+      end
     end,
   },
 

@@ -26,6 +26,7 @@ function M.readFromStorage()
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
     levitate = readBool(section, config.settingLevitateKey, 'ghostlyLevitate'),
     diseaseResist = readBool(section, config.settingDiseaseResistKey, 'commonDiseaseImmunity'),
+    undeadFriendly = readBool(section, config.settingUndeadFriendlyKey, 'undeadFriendly'),
   }
 end
 

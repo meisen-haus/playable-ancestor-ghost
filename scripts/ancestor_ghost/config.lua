@@ -8,10 +8,12 @@ local M = {
   settingNormalWeaponsKey = 'normalWeaponsImmunity',
   settingLevitateKey = 'ghostlyLevitate',
   settingDiseaseResistKey = 'commonDiseaseImmunity',
+  settingUndeadFriendlyKey = 'undeadFriendly',
   settingDefaults = {
     normalWeaponsImmunity = 100,
     ghostlyLevitate = false,
     commonDiseaseImmunity = true,
+    undeadFriendly = false,
   },
 
   LEGACY_WRAITH_ABILITIES = {

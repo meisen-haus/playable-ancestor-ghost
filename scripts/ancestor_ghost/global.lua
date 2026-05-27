@@ -2,6 +2,7 @@
 
 local types = require('openmw.types')
 local world = require('openmw.world')
+local undeadFriendly = require('scripts.ancestor_ghost.undead_friendly_global')
 
 local RACE_ID = 'ancestor_ghost'
 
@@ -44,6 +45,10 @@ end
 
 return {
   engineHandlers = {
+    onActorActive = function(actor)
+      undeadFriendly.tryPacifyActor(actor)
+    end,
+
     onUpdate = function(dt)
       timeSinceCheck = timeSinceCheck + dt
       if timeSinceCheck >= CHECK_INTERVAL then
@@ -54,6 +59,12 @@ return {
           end
         end
       end
+    end,
+  },
+
+  eventHandlers = {
+    AG_UndeadFriendlySync = function(data)
+      undeadFriendly.applySync(data)
     end,
   },
 }
