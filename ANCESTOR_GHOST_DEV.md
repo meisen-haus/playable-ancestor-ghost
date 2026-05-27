@@ -101,9 +101,11 @@ Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 
 - `settings.lua` + `player.lua` — register mod settings page (player script only).
 - `balance.lua` / `player_settings.lua` — Ghostly Nature variant from player storage.
-- `undead_friendly.lua` — optional undead pacify (Fight 0 on `Creature.TYPE.Undead`); player script only.
-- `global.lua` — unequips locked slots every 0.25 s for `ancestor_ghost` race.
-- `player.lua` — tutorial on equip block; applies balance on first frame and when settings change; polls undead pacify every 0.25 s.
+- `undead_friendly_global.lua` — `onActorActive` + `world.activeActors`; sends `AG_PacifyUndead` / `AG_RestoreFight` (global cannot write AI fight stats in OpenMW 0.51).
+- `undead_creature.lua` — CREATURE local script; zeros Fight on `AG_PacifyUndead` (OpenMW equivalent of USkele’s per-ref `mobile.fight = 0`).
+- `undead_friendly_player.lua` — sends `AG_UndeadFriendlySync` to global (player scripts cannot write global storage).
+- `global.lua` — unequips locked slots every 0.25 s; `onActorActive` + `AG_UndeadFriendlySync`.
+- `player.lua` — `undeadFriendly.syncToGlobal()` on load / active / setting change.
 
 Racial **Ghost Curse** comes from RACE `NPCS` in the ESP; **Ghostly Nature** variant is swapped by Lua from mod settings.
 

@@ -17,6 +17,7 @@ All notable changes to this project are documented here.
 
 ### Changed
 
+- **Undead are friendly** uses cell-load pacify (`onActorActive` + CREATURE local script) instead of polling nearby actors
 - **Levitation** default is now **off** (was on)
 - **Ghost Curse** magicka cost **9** (`SPDT` flags `0`; `F_Autocalc` was forcing ~40)
 - **README.md** shortened; player details moved to **PLAYERS.md**

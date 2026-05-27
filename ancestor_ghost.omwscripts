@@ -3,4 +3,5 @@
 # LOAD must be first: API version check runs at content-load time.
 LOAD: scripts/ancestor_ghost/content_register.lua
 GLOBAL: scripts/ancestor_ghost/global.lua
+CREATURE: scripts/ancestor_ghost/undead_creature.lua
 PLAYER: scripts/ancestor_ghost/player.lua
