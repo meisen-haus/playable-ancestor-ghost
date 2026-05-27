@@ -22,7 +22,7 @@ Play as a Dunmer **Ancestor Ghost**: incorporeal, tomb-bound, and unable to wear
    - `ancestor_ghost.omwaddon` (race, spells, body parts)
    - `ancestor_ghost.omwscripts` (equipment lock and mod settings)
 6. In load order, place **`ancestor_ghost.omwaddon` after `Morrowind.esm`**.
-7. Start the game and choose **Ancestor Ghost** at character creation.
+7. Start the game, choose **Ancestor Ghost** at character creation, and pick a birthsign (see **Bonebiter** below for the tomb-wraith kit).
 
 If options or equipment rules do nothing, the **scripts** file is probably not enabled.
 
@@ -52,15 +52,6 @@ Custom classes still add **+10** to each favored attribute at creation, same as 
 
 Open **Options**, then **Scripts**, then **Ancestor Ghost** (from the pause menu, or the main menu while a save is loaded). Settings are **per save**. When you change something, you should see a short on-screen message and the effect applies right away.
 
-### Wraith of Sul-Senipul (default: off)
-
-Adds an optional tomb-wraith kit:
-
-- Ability **Wraith** (+25 Endurance, 100% resist shock)
-- Spells **Grave Curse: Fatigue**, **Grave Curse: Strength**, and **Bonebiter**
-
-Turn this off to remove those spells and the ability from your character.
-
 ### Normal Weapons Immunity (default: 100%)
 
 - **100%:** Normal weapons (iron, steel, and similar) do not harm you.
@@ -74,6 +65,15 @@ Immunity and levitation options each change which **Ghostly Nature** record you 
 When enabled, **Ghostly Nature** includes constant Levitate (magnitude 10). Turn off to stay grounded while keeping your other ghost traits.
 
 Requires **Allow Levitation** in OpenMW (**Options → Game**, or `[Game]` `allow levitation = true` in `settings.cfg`).
+
+## Birthsign: Bonebiter
+
+At character creation, choose the **Bonebiter** birthsign for the tomb-wraith kit (Wraith of Sul-Senipul):
+
+- Ability **Wraith** (+25 Endurance, 100% resist shock)
+- Spells **Grave Curse: Fatigue**, **Grave Curse: Strength**, and **Bonebiter**
+
+Like vanilla birthsigns, these are granted at creation and stay on your spell list. Other birthsigns work as usual if you do not want this kit.
 
 ## Equipment you cannot use
 

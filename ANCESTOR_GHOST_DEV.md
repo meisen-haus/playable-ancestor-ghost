@@ -24,7 +24,7 @@ playable-ancestor-ghost/
 └── .cursor/rules/              # Agent guidance (MCP, vendored io_scene_mw)
 ```
 
-Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 8 SPEL + 1 RACE.
+Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 11 SPEL + 1 RACE + 1 BSGN.
 
 **Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It rebuilds `ancestor_ghost.omwaddon` and attaches **one zip** (`ancestor-ghost-<tag>.zip`) containing the full mod folder (`ancestor-ghost/`: `.omwaddon`, `.omwscripts`, `scripts/`, `l10n/`, `Meshes/`, `Textures/`, docs). Manual test: Actions → Release build → Run workflow.
 
@@ -41,9 +41,10 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 
 | Setting | Default | Effect |
 |---|---|---|
-| Wraith of Sul-Senipul | off | Adds spells Grave Curse: Fatigue/Strength, Bonebiter, and ability Wraith (+25 Endurance, 100% resist shock) |
 | Normal Weapons Immunity | 100% | Swaps **Ghostly Nature** resist-normal-weapons (`_*_lev` / `_*_ground` × 100 / 50 / 0) |
 | Ghostly Levitation | on | Swaps levitate vs grounded **Ghostly Nature** variant (same immunity suffix) |
+
+**Bonebiter birthsign** (`ag_sign_bonebiter`): at character creation, grants `ag_wraith_sul`, Grave Curse spells, and **Bonebiter** (replaces the old wraith mod-setting toggle).
 
 Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 
@@ -70,7 +71,13 @@ Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
 ### SPEL: Ghostly Nature variants (Ability)
 
-Six records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}`. Shared on all: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. `_*_lev` adds Levitate 10; `_*_ground` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_lev`. `balance.lua` strips the other five and `spells:add`s the record matching **Normal Weapons Immunity** and **Ghostly Levitation**. Wraith kit remains separate Lua-granted spells. Legacy three-variant IDs (`ag_ghostly_nature_100` without suffix, etc.) are stripped on apply.
+Six records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}`. Shared on all: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. `_*_lev` adds Levitate 10; `_*_ground` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_lev`. `balance.lua` strips the other five and `spells:add`s the record matching **Normal Weapons Immunity** and **Ghostly Levitation**. Wraith kit is granted via **Bonebiter** birthsign at character creation. Legacy three-variant IDs (`ag_ghostly_nature_100` without suffix, etc.) are stripped on apply.
+
+### BSGN: `ag_sign_bonebiter` (Bonebiter)
+
+Display name **Bonebiter**. Texture `Birthsigns\Tx_birth_bonebiter.tga` (256×128, same format as vanilla birthsigns). Rebuild: `node tools/build_bonebiter_birthsign_texture.mjs` (contrast + blue bow constellation lines on `tools/source/bonebiter_birthsign.png`, then scale).
+
+Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance, 100% resist shock), `ag_wraith_grave_fatigue`, `ag_wraith_grave_strength`, `ag_wraith_bonebiter`. Replaces the former **Wraith of Sul-Senipul** mod-setting toggle.
 
 ### SPEL: `ag_ghost_curse` (touch spell)
 
@@ -91,7 +98,7 @@ Each BODY: `NAME`, `MODL`, `FNAM` (`ancestor_ghost`), `BYDT`.
 Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 
 - `settings.lua` + `player.lua` — register mod settings page (player script only).
-- `balance.lua` / `player_settings.lua` — wraith kit + normal-weapons immunity from player storage.
+- `balance.lua` / `player_settings.lua` — normal-weapons immunity from player storage.
 - `global.lua` — unequips locked slots every 0.25 s for `ancestor_ghost` race.
 - `player.lua` — tutorial on equip block; applies balance on first frame and when settings change.
 

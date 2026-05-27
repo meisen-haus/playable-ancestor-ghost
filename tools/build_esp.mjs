@@ -2,6 +2,7 @@
 /**
  * Builds ancestor_ghost.omwaddon containing:
  *   - 11× SPEL records  (6× ghostly nature immunity×levitate, ghost curse, wraith kit)
+ *   - 1×  BSGN record   (Bonebiter birthsign — wraith kit at character creation)
  *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
  *
@@ -239,7 +240,7 @@ function buildGhostCurseSpell() {
   ]);
 }
 
-// Wraith of Sul-Senipul (optional; granted via Lua when enabled in mod settings)
+// Tomb-wraith kit (granted via Bonebiter birthsign at character creation)
 function buildWraithAbility() {
   return record('SPEL', [
     subrecord('NAME', zstring('ag_wraith_sul')),
@@ -391,6 +392,25 @@ function buildRaceRecord() {
 }
 
 // ---------------------------------------------------------------------------
+// BSGN: Bonebiter (Wraith of Sul-Senipul — pick at character creation)
+// ---------------------------------------------------------------------------
+function buildBonebiterBirthsign() {
+  return record('BSGN', [
+    subrecord('NAME', zstring('ag_sign_bonebiter')),
+    subrecord('FNAM', zstring('Bonebiter')),
+    subrecord('TNAM', zstring('Birthsigns\\Tx_birth_bonebiter.tga')),
+    subrecord('DESC', zstring(
+      'Born under the wraith-star of Sul-Senipul, you are a tomb-bound hunger that gnaws at bone and sinew. ' +
+      'The grave grants you endurance beyond the dust, immunity to shock, and curses to drain the living.'
+    )),
+    subrecord('NPCS', padId('ag_wraith_sul')),
+    subrecord('NPCS', padId('ag_wraith_grave_fatigue')),
+    subrecord('NPCS', padId('ag_wraith_grave_strength')),
+    subrecord('NPCS', padId('ag_wraith_bonebiter')),
+  ]);
+}
+
+// ---------------------------------------------------------------------------
 // Assemble plugin
 // ---------------------------------------------------------------------------
 const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 hair = 26 BODY
@@ -406,13 +426,14 @@ const SPELL_RECORDS = [
   buildWraithGraveStrength(),
   buildWraithBonebiter(),
 ];
-const CONTENT_RECORDS = SPELL_RECORDS.length + bodyRecords.length + 1;
+const CONTENT_RECORDS = SPELL_RECORDS.length + bodyRecords.length + 2;
 
 const allRecords = [
   buildTes3Header(CONTENT_RECORDS),
   ...SPELL_RECORDS,
   ...bodyRecords,
   buildRaceRecord(),
+  buildBonebiterBirthsign(),
 ];
 
 const plugin = Buffer.concat(allRecords);
@@ -431,6 +452,7 @@ const required = [
   ['ag_wraith_sul',              'Wraith ability ID'],
   ['ag_wraith_grave_fatigue',    'Wraith Grave Curse Fatigue ID'],
   ['ag_wraith_bonebiter',        'Bonebiter spell ID'],
+  ['ag_sign_bonebiter',          'Bonebiter birthsign ID'],
   ['ancestor_ghost',             'Race record ID'],
   ['Ancestor Ghost',             'Race display name'],
   ['ag_head_m_01',               'Male head body part ID'],

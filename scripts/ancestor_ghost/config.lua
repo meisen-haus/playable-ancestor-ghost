@@ -5,23 +5,17 @@ local M = {
 
   settingsPageKey = 'AncestorGhost',
   settingsGroupKey = 'SettingsAncestorGhost',
-  settingWraithKey = 'wraithOfSulSenipul',
   settingNormalWeaponsKey = 'normalWeaponsImmunity',
   settingLevitateKey = 'ghostlyLevitate',
   settingDefaults = {
-    wraithOfSulSenipul = false,
     normalWeaponsImmunity = 100,
     ghostlyLevitate = true,
   },
 
-  SPELL_WRAITH = 'ag_wraith_sul',
+  BIRTHSIGN_BONEBITER = 'ag_sign_bonebiter',
+
   LEGACY_WRAITH_ABILITIES = {
     'ag_wraith',
-  },
-  WRAITH_SPELLS = {
-    'ag_wraith_grave_fatigue',
-    'ag_wraith_grave_strength',
-    'ag_wraith_bonebiter',
   },
 
   LEGACY_GHOSTLY_NATURE_SPELLS = {

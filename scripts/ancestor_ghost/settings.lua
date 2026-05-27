@@ -23,13 +23,6 @@ function M.registerGroup()
     order = 0,
     settings = {
       {
-        key = config.settingWraithKey,
-        renderer = 'checkbox',
-        name = 'wraithOfSulSenipul',
-        description = 'wraithOfSulSenipulDescription',
-        default = config.settingDefaults.wraithOfSulSenipul,
-      },
-      {
         key = config.settingNormalWeaponsKey,
         renderer = 'select',
         name = 'normalWeaponsImmunity',
