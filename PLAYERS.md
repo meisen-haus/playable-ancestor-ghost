@@ -22,7 +22,7 @@ Play as a Dunmer **Ancestor Ghost**: incorporeal, tomb-bound, and unable to wear
    - `ancestor_ghost.omwaddon` (race, spells, body parts)
    - `ancestor_ghost.omwscripts` (equipment lock and mod settings)
 6. In load order, place **`ancestor_ghost.omwaddon` after `Morrowind.esm`**.
-7. Start the game, choose **Ancestor Ghost** at character creation, and pick a birthsign (see **Bonebiter** below for the tomb-wraith kit).
+7. Start the game, choose **Ancestor Ghost** at character creation, and pick a birthsign (see **The Bonebiter** below for the tomb-wraith kit).
 
 If options or equipment rules do nothing, the **scripts** file is probably not enabled.
 
@@ -31,9 +31,9 @@ If options or equipment rules do nothing, the **scripts** file is probably not e
 Every Ancestor Ghost gets the following:
 
 - **Look:** Ghost head and robe; flesh slots hidden; Chameleon 50%.
-- **Ghostly Nature:** Constant ability with Chameleon 50%. Optional **Levitate** (magnitude 10), **disease resistance**, and resist to normal weapons are set in mod options below.
+- **Ghostly Nature:** Constant ability with Chameleon 50% and **Water Breathing**. Optional **Levitate** (magnitude 10), **disease resistance**, and **resistance to normal weapons** are set in mod options below.
 - **Resists:** Frost and poison 100% (always). Common disease 100% when **Common Disease Immunity** is enabled on Ghostly Nature (default on).
-- **Magicka:** Fortify Maximum Magicka at **3× Intelligence** (similar to The Mage birthsign, with a stronger multiplier).
+- **Magicka:** Fortify Maximum Magicka **+3.0× INT** on the effect (magnitude 30); **4× Intelligence** total max magicka (base 1.0× plus the +3.0× bonus).
 - **Starting spell:** **Ghost Curse** (touch, **9** magicka): drains endurance and fatigue, damages health.
 - **Combat:** Hand-to-hand and Ghost Curse only. No weapons, armour, or clothing.
 - **Jewelry:** Rings and amulets are allowed.
@@ -52,7 +52,7 @@ Custom classes still add **+10** to each favored attribute at creation, same as 
 
 Open **Options**, then **Scripts**, then **Ancestor Ghost** (from the pause menu, or the main menu while a save is loaded). Settings are **per save**. When you change something, you should see a short on-screen message and the effect applies right away.
 
-### Normal Weapons Immunity (default: 100%)
+### Resistance to Normal Weapons (default: 100%)
 
 - **100%:** Normal weapons (iron, steel, and similar) do not harm you.
 - **50%:** Half damage from normal weapons.
@@ -70,9 +70,9 @@ When enabled, **Ghostly Nature** includes constant Levitate (magnitude 10). Turn
 
 Requires **Allow Levitation** in OpenMW (**Options → Game**, or `[Game]` `allow levitation = true` in `settings.cfg`).
 
-## Birthsign: Bonebiter
+## Birthsign: The Bonebiter
 
-At character creation, choose the **Bonebiter** birthsign for the tomb-wraith kit (Wraith of Sul-Senipul):
+At character creation, choose **The Bonebiter** birthsign for the tomb-wraith kit (Wraith of Sul-Senipul):
 
 - Ability **Wraith** (+25 Endurance, 100% resist shock)
 - Spells **Grave Curse: Fatigue**, **Grave Curse: Strength**, and **Bonebiter**
@@ -90,7 +90,7 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 ## Tips
 
 - **New character:** Pick Ancestor Ghost at creation. Existing saves need a race-change mod or a new game to use this race.
-- **Testing immunity:** At **None**, test with an iron weapon or an NPC who uses one. At **100%**, you should take no damage from normal weapons.
+- **Testing resistance to normal weapons:** At **None**, test with an iron weapon or an NPC who uses one. At **100%**, you should take no damage from normal weapons.
 - **After updating the mod:** Restart OpenMW and load your save so scripts and the plugin reload.
 
 ## Troubleshooting
@@ -101,7 +101,7 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 
 **Ghost Curse costs 40 magicka:** You have an old `ancestor_ghost.omwaddon`. Replace it with the latest release build.
 
-**Still immune at None:** Old save or old plugin. Install the latest addon and toggle the setting again.
+**Still have resistance to normal weapons at None:** Old save or old plugin. Install the latest addon and toggle the setting again.
 
 **Wrong body or missing ghost mesh:** Install the full mod folder, including `Meshes/` and `Textures/`.
 

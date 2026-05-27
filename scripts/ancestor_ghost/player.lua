@@ -1,9 +1,12 @@
 -- PLAYER script: settings UI, tutorial message, balance on load / option changes.
 
+local core = require('openmw.core')
 local ui = require('openmw.ui')
 local storage = require('openmw.storage')
 local async = require('openmw.async')
 local self = require('openmw.self')
+
+local l10n = core.l10n('AncestorGhost')
 local config = require('scripts.ancestor_ghost.config')
 local settings = require('scripts.ancestor_ghost.settings')
 local balance = require('scripts.ancestor_ghost.balance')
@@ -22,7 +25,7 @@ local function applyBalance(notify)
   if not balance.applyToPlayer(self) then return false end
   balanceSynced = true
   if notify then
-    ui.showMessage('Ancestor Ghost options applied.')
+    ui.showMessage(l10n('optionsApplied'))
   end
   return true
 end
@@ -74,7 +77,7 @@ return {
       if tutorialShown then return end
       tutorialShown = true
       playerStore:set(STORE_TUTORIAL, true)
-      ui.showMessage('Ancestor Ghosts cannot wear clothing, weapons, or armour.')
+      ui.showMessage(l10n('equipBlocked'))
     end,
   },
 }

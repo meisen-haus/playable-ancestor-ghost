@@ -5,6 +5,7 @@ local config = require('scripts.ancestor_ghost.config')
 local M = {}
 
 local function snapImmunity(value)
+  if value == 0 or value == '0' then return 0 end
   local fallback = config.settingDefaults.normalWeaponsImmunity
   local v = tonumber(value) or fallback
   if v <= 0 then return 0 end
