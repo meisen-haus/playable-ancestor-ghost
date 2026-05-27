@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Builds ancestor_ghost.omwaddon containing:
- *   - 8×  SPEL records  (3× ghostly nature immunity, ghost curse, wraith kit)
+ *   - 11× SPEL records  (6× ghostly nature immunity×levitate, ghost curse, wraith kit)
  *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
  *
@@ -190,18 +190,26 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 }
 
 // ---------------------------------------------------------------------------
-// SPEL: ag_ghostly_nature_{100,50,0}  (racial ability — Scripts picks one)
+// SPEL: ag_ghostly_nature_{100,50,0}_{lev,ground}  (balance.lua picks one)
 // ---------------------------------------------------------------------------
-function buildGhostlyNatureSpell(spellId, resistNormalWeapons) {
+function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate) {
   const enams = [
-    subrecord('ENAM', enam({ effectId: FX.LEVITATE,            duration: 0, magMin: 10,  magMax: 10  })),
     subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: 20,  magMax: 20  })),
   ];
+  if (withLevitate) {
+    enams.unshift(subrecord('ENAM', enam({
+      effectId: FX.LEVITATE,
+      duration: 0,
+      magMin: 10,
+      magMax: 10,
+    })));
+  }
   if (resistNormalWeapons > 0) {
-    enams.splice(1, 0, subrecord('ENAM', enam({
+    const insertAt = withLevitate ? 1 : 0;
+    enams.splice(insertAt, 0, subrecord('ENAM', enam({
       effectId: FX.RESIST_NORMAL_WEAPONS,
       duration: 0,
       magMin: resistNormalWeapons,
@@ -370,7 +378,7 @@ function buildRaceRecord() {
     subrecord('RADT', radt),
     // Default racial ability at chargen; balance.lua swaps variant from mod settings.
     subrecord('NPCS', padId('ag_ghost_curse')),
-    subrecord('NPCS', padId('ag_ghostly_nature_100')),
+    subrecord('NPCS', padId('ag_ghostly_nature_100_lev')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
       'Spectral and untouchable by mundane weapons, they cannot wield physical arms or don ' +
@@ -386,10 +394,12 @@ function buildRaceRecord() {
 // Assemble plugin
 // ---------------------------------------------------------------------------
 const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 hair = 26 BODY
+const GHOSTLY_IMMUNITY = [100, 50, 0];
 const SPELL_RECORDS = [
-  buildGhostlyNatureSpell('ag_ghostly_nature_100', 100),
-  buildGhostlyNatureSpell('ag_ghostly_nature_50', 50),
-  buildGhostlyNatureSpell('ag_ghostly_nature_0', 0),
+  ...GHOSTLY_IMMUNITY.flatMap((mag) => [
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev`, mag, true),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground`, mag, false),
+  ]),
   buildGhostCurseSpell(),
   buildWraithAbility(),
   buildWraithGraveFatigue(),
@@ -413,9 +423,10 @@ writeFileSync(OUT, plugin);
 // ---------------------------------------------------------------------------
 const text = plugin.toString('binary');
 const required = [
-  ['ag_ghostly_nature_100',      'Ghostly Nature 100% ID'],
-  ['ag_ghostly_nature_50',       'Ghostly Nature 50% ID'],
-  ['ag_ghostly_nature_0',        'Ghostly Nature 0% ID'],
+  ['ag_ghostly_nature_100_lev',    'Ghostly Nature 100% + levitate ID'],
+  ['ag_ghostly_nature_100_ground', 'Ghostly Nature 100% grounded ID'],
+  ['ag_ghostly_nature_50_lev',     'Ghostly Nature 50% + levitate ID'],
+  ['ag_ghostly_nature_0_ground',   'Ghostly Nature 0% grounded ID'],
   ['ag_ghost_curse',             'Ghost Curse spell ID'],
   ['ag_wraith_sul',              'Wraith ability ID'],
   ['ag_wraith_grave_fatigue',    'Wraith Grave Curse Fatigue ID'],
@@ -499,10 +510,13 @@ for (let i = 0; i < plugin.length - 16; i++) {
   }
 }
 
-for (const [id, resist] of [
-  ['ag_ghostly_nature_100', 100],
-  ['ag_ghostly_nature_50', 50],
-  ['ag_ghostly_nature_0', 0],
+for (const [id, resist, withLevitate] of [
+  ['ag_ghostly_nature_100_lev', 100, true],
+  ['ag_ghostly_nature_100_ground', 100, false],
+  ['ag_ghostly_nature_50_lev', 50, true],
+  ['ag_ghostly_nature_50_ground', 50, false],
+  ['ag_ghostly_nature_0_lev', 0, true],
+  ['ag_ghostly_nature_0_ground', 0, false],
 ]) {
   for (let i = 0; i < plugin.length - 16; i++) {
     if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
@@ -523,8 +537,13 @@ for (const [id, resist] of [
     }
     if (spellId !== id) continue;
     const lev = enams.find((c) => c.e === FX.LEVITATE);
-    if (!lev || lev.mag !== 10) {
-      console.error(`validation FAILED: ${id} levitate ENAM`, enams);
+    if (withLevitate) {
+      if (!lev || lev.mag !== 10) {
+        console.error(`validation FAILED: ${id} missing levitate ENAM`, enams);
+        ok = false;
+      }
+    } else if (lev) {
+      console.error(`validation FAILED: ${id} should omit levitate ENAM`, enams);
       ok = false;
     }
     const rnw = enams.find((c) => c.e === FX.RESIST_NORMAL_WEAPONS);

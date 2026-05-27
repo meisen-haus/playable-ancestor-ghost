@@ -1,27 +1,17 @@
 -- Shared IDs (must match tools/build_esp.mjs).
 
-return {
+local M = {
   RACE_ID = 'ancestor_ghost',
 
   settingsPageKey = 'AncestorGhost',
   settingsGroupKey = 'SettingsAncestorGhost',
   settingWraithKey = 'wraithOfSulSenipul',
   settingNormalWeaponsKey = 'normalWeaponsImmunity',
+  settingLevitateKey = 'ghostlyLevitate',
   settingDefaults = {
     wraithOfSulSenipul = false,
     normalWeaponsImmunity = 100,
-  },
-
-  -- One Ghostly Nature ability per immunity level (balance.lua swaps spells).
-  GHOSTLY_NATURE_BY_IMMUNITY = {
-    [100] = 'ag_ghostly_nature_100',
-    [50] = 'ag_ghostly_nature_50',
-    [0] = 'ag_ghostly_nature_0',
-  },
-  GHOSTLY_NATURE_VARIANTS = {
-    'ag_ghostly_nature_100',
-    'ag_ghostly_nature_50',
-    'ag_ghostly_nature_0',
+    ghostlyLevitate = true,
   },
 
   SPELL_WRAITH = 'ag_wraith_sul',
@@ -38,5 +28,29 @@ return {
     'ag_ghostly_nature',
     'ag_immunity_norm_100',
     'ag_immunity_norm_50',
+    'ag_ghostly_nature_100',
+    'ag_ghostly_nature_50',
+    'ag_ghostly_nature_0',
   },
 }
+
+-- Six Ghostly Nature abilities: immunity (100/50/0) × levitate on/off.
+M.GHOSTLY_NATURE_VARIANTS = {
+  'ag_ghostly_nature_100_lev',
+  'ag_ghostly_nature_100_ground',
+  'ag_ghostly_nature_50_lev',
+  'ag_ghostly_nature_50_ground',
+  'ag_ghostly_nature_0_lev',
+  'ag_ghostly_nature_0_ground',
+}
+
+function M.ghostlyNatureSpellId(immunityMag, levitate)
+  local mag = immunityMag
+  if mag ~= 0 and mag ~= 50 then
+    mag = 100
+  end
+  local suffix = levitate and '_lev' or '_ground'
+  return ('ag_ghostly_nature_%d%s'):format(mag, suffix)
+end
+
+return M

@@ -40,6 +40,13 @@ function M.registerGroup()
           items = { 100, 50, 0 },
         },
       },
+      {
+        key = config.settingLevitateKey,
+        renderer = 'checkbox',
+        name = 'ghostlyLevitate',
+        description = 'ghostlyLevitateDescription',
+        default = config.settingDefaults.ghostlyLevitate,
+      },
     },
   })
 end

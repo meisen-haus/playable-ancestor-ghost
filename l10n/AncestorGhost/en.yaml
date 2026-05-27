@@ -10,6 +10,9 @@ wraithOfSulSenipulDescription: "Grants Grave Curse spells, Bonebiter, and the Wr
 normalWeaponsImmunity: "Normal Weapons Immunity"
 normalWeaponsImmunityDescription: "Which Ghostly Nature ability you have (100%, 50%, or no resist normal weapons)."
 
+ghostlyLevitate: "Ghostly Levitation"
+ghostlyLevitateDescription: "Constant Levitate 10 on Ghostly Nature (requires Allow Levitation in OpenMW game settings)."
+
 '100': '100%'
 '50': '50%'
 '0': 'None'

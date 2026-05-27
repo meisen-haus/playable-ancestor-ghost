@@ -12,11 +12,20 @@ local function snapImmunity(value)
   return 100
 end
 
+local function readLevitate(section)
+  local v = section:get(config.settingLevitateKey)
+  if v == nil then
+    return config.settingDefaults.ghostlyLevitate
+  end
+  return v == true
+end
+
 function M.readFromStorage()
   local section = storage.playerSection(config.settingsGroupKey)
   return {
     wraith = section:get(config.settingWraithKey) == true,
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
+    levitate = readLevitate(section),
   }
 end
 
