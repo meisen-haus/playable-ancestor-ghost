@@ -5,12 +5,12 @@ return {
 
   settingsPageKey = 'AncestorGhost',
   settingsGroupKey = 'SettingsAncestorGhost',
-  settingWraithKey = 'wraithOfSulSenipul',
   settingNormalWeaponsKey = 'normalWeaponsImmunity',
   settingDefaults = {
-    wraithOfSulSenipul = false,
     normalWeaponsImmunity = 100,
   },
+
+  BIRTHSIGN_BONEBITER = 'ag_sign_bonebiter',
 
   -- One Ghostly Nature ability per immunity level (balance.lua swaps spells).
   GHOSTLY_NATURE_BY_IMMUNITY = {
@@ -24,14 +24,8 @@ return {
     'ag_ghostly_nature_0',
   },
 
-  SPELL_WRAITH = 'ag_wraith_sul',
   LEGACY_WRAITH_ABILITIES = {
     'ag_wraith',
-  },
-  WRAITH_SPELLS = {
-    'ag_wraith_grave_fatigue',
-    'ag_wraith_grave_strength',
-    'ag_wraith_bonebiter',
   },
 
   LEGACY_GHOSTLY_NATURE_SPELLS = {

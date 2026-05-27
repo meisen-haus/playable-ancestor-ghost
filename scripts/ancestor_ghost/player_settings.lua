@@ -15,7 +15,6 @@ end
 function M.readFromStorage()
   local section = storage.playerSection(config.settingsGroupKey)
   return {
-    wraith = section:get(config.settingWraithKey) == true,
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
   }
 end
