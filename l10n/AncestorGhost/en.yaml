@@ -10,6 +10,9 @@ wraithOfSulSenipulDescription: "Grants Grave Curse spells, Bonebiter, and the Wr
 normalWeaponsImmunity: "Normal Weapons Immunity"
 normalWeaponsImmunityDescription: "Which Ghostly Nature ability you have (100%, 50%, or no resist normal weapons)."
 
+undeadFriendly: "Undead are friendly"
+undeadFriendlyDescription: "Common tomb undead (skeletons, bonewalkers, ancestral ghosts, and similar) do not attack you. They may still fight back if you strike first."
+
 '100': '100%'
 '50': '50%'
 '0': 'None'

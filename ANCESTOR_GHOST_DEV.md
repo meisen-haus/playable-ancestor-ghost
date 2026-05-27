@@ -43,6 +43,7 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 |---|---|---|
 | Wraith of Sul-Senipul | off | Adds spells Grave Curse: Fatigue/Strength, Bonebiter, and ability Wraith (+25 Endurance, 100% resist shock) |
 | Normal Weapons Immunity | 100% | Swaps which **Ghostly Nature** ability is granted (`ag_ghostly_nature_100` / `_50` / `_0`) |
+| Undead are friendly | off | Sets **Fight** to 0 on active creatures with CREA type **Undead** (skeletons, bonewalkers, ghosts, etc.); restores AI when turned off |
 
 Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 
@@ -91,8 +92,9 @@ Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 
 - `settings.lua` + `player.lua` — register mod settings page (player script only).
 - `balance.lua` / `player_settings.lua` — wraith kit + normal-weapons immunity from player storage.
+- `undead_friendly.lua` — optional undead pacify (Fight 0 on `Creature.TYPE.Undead`); player script only.
 - `global.lua` — unequips locked slots every 0.25 s for `ancestor_ghost` race.
-- `player.lua` — tutorial on equip block; applies balance on first frame and when settings change.
+- `player.lua` — tutorial on equip block; applies balance on first frame and when settings change; polls undead pacify every 0.25 s.
 
 Racial spells come from RACE `NPCS` in the ESP, not Lua.
 

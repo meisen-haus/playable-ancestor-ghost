@@ -17,6 +17,7 @@ function M.readFromStorage()
   return {
     wraith = section:get(config.settingWraithKey) == true,
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
+    undeadFriendly = section:get(config.settingUndeadFriendlyKey) == true,
   }
 end
 

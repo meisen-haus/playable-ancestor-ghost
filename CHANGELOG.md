@@ -7,7 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - **[PLAYERS.md](PLAYERS.md)** — player-focused install, settings, and troubleshooting guide
-- Mod settings (**Options → Scripts → Ancestor Ghost**): Wraith of Sul-Senipul, Normal Weapons Immunity
+- Mod settings (**Options → Scripts → Ancestor Ghost**): Wraith of Sul-Senipul, Normal Weapons Immunity, Undead are friendly
 - Three **Ghostly Nature** ability records (`_100` / `_50` / `_0`); Lua grants one matching the immunity setting
 - Wraith kit spells and **Wraith** ability (`ag_wraith_sul`: +25 Endurance, resist shock)
 - OpenMW Lua: `balance.lua`, `settings.lua`, per-save `playerSection` storage, live apply on setting change

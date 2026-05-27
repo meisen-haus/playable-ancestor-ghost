@@ -40,6 +40,13 @@ function M.registerGroup()
           items = { 100, 50, 0 },
         },
       },
+      {
+        key = config.settingUndeadFriendlyKey,
+        renderer = 'checkbox',
+        name = 'undeadFriendly',
+        description = 'undeadFriendlyDescription',
+        default = config.settingDefaults.undeadFriendly,
+      },
     },
   })
 end

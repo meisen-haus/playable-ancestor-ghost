@@ -7,9 +7,11 @@ return {
   settingsGroupKey = 'SettingsAncestorGhost',
   settingWraithKey = 'wraithOfSulSenipul',
   settingNormalWeaponsKey = 'normalWeaponsImmunity',
+  settingUndeadFriendlyKey = 'undeadFriendly',
   settingDefaults = {
     wraithOfSulSenipul = false,
     normalWeaponsImmunity = 100,
+    undeadFriendly = false,
   },
 
   -- One Ghostly Nature ability per immunity level (balance.lua swaps spells).

@@ -8,6 +8,7 @@ local config = require('scripts.ancestor_ghost.config')
 local settings = require('scripts.ancestor_ghost.settings')
 local balance = require('scripts.ancestor_ghost.balance')
 local playerSettings = require('scripts.ancestor_ghost.player_settings')
+local undeadFriendly = require('scripts.ancestor_ghost.undead_friendly')
 
 pcall(settings.registerPage)
 pcall(settings.registerGroup)
@@ -17,6 +18,8 @@ local STORE_TUTORIAL = 'ag_tutorial_shown'
 local tutorialShown = false
 local settingsSubscribed = false
 local balanceSynced = false
+local undeadCheckTimer = 0
+local UNDEAD_CHECK_INTERVAL = 0.25
 
 local function applyBalance(notify)
   if not balance.applyToPlayer(self) then return false end
@@ -38,6 +41,7 @@ local function ensureSettingsSubscription()
   local modSettings = storage.playerSection(config.settingsGroupKey)
   modSettings:subscribe(async:callback(function(_section, _key)
     applyBalance(true)
+    undeadFriendly.update()
   end))
 end
 
@@ -51,21 +55,30 @@ return {
     -- New saves call onInit (not onLoad). onActive fires when the player is in the world.
     onInit = function()
       trySyncBalance(false)
+      undeadFriendly.update()
     end,
 
     onLoad = function()
       tutorialShown = playerStore:get(STORE_TUTORIAL) or false
       trySyncBalance(false)
+      undeadFriendly.update()
     end,
 
     onActive = function()
       balanceSynced = false
       trySyncBalance(false)
+      undeadFriendly.update()
     end,
 
-    onFrame = function()
-      if balanceSynced then return end
-      trySyncBalance(false)
+    onFrame = function(dt)
+      if not balanceSynced then
+        trySyncBalance(false)
+      end
+      undeadCheckTimer = undeadCheckTimer + dt
+      if undeadCheckTimer >= UNDEAD_CHECK_INTERVAL then
+        undeadCheckTimer = 0
+        undeadFriendly.update()
+      end
     end,
   },
 
