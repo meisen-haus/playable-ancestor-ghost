@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Builds ancestor_ghost.omwaddon containing:
- *   - 11× SPEL records  (6× ghostly nature immunity×levitate, ghost curse, wraith kit)
+ *   - 17× SPEL records  (12× ghostly nature immunity×levitate×disease, ghost curse, wraith kit)
  *   - 1×  BSGN record   (Bonebiter birthsign — wraith kit at character creation)
  *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
@@ -26,6 +26,7 @@ const FX = {
   RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons (vanilla resist fire_75 uses 90)
   RESIST_FROST          : 91, // ResistFrost (Ghostly Nature)
   RESIST_SHOCK          : 92, // ResistShock (Wraith)
+  RESIST_COMMON_DISEASE : 94, // ResistCommonDisease
   RESIST_POISON         : 97, // ResistPoison
   DRAIN_ATTRIBUTE       : 17, // DrainAttribute
   DRAIN_FATIGUE         : 20, // DrainFatigue
@@ -191,15 +192,20 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 }
 
 // ---------------------------------------------------------------------------
-// SPEL: ag_ghostly_nature_{100,50,0}_{lev,ground}  (balance.lua picks one)
+// SPEL: ag_ghostly_nature_{100,50,0}_{lev,ground}_{dis,nodis}  (balance.lua picks one)
 // ---------------------------------------------------------------------------
-function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate) {
+function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate, withDiseaseResist) {
   const enams = [
     subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: 20,  magMax: 20  })),
   ];
+  if (withDiseaseResist) {
+    enams.push(
+      subrecord('ENAM', enam({ effectId: FX.RESIST_COMMON_DISEASE, duration: 0, magMin: 100, magMax: 100 })),
+    );
+  }
   if (withLevitate) {
     enams.unshift(subrecord('ENAM', enam({
       effectId: FX.LEVITATE,
@@ -379,7 +385,7 @@ function buildRaceRecord() {
     subrecord('RADT', radt),
     // Default racial ability at chargen; balance.lua swaps variant from mod settings.
     subrecord('NPCS', padId('ag_ghost_curse')),
-    subrecord('NPCS', padId('ag_ghostly_nature_100_lev')),
+    subrecord('NPCS', padId('ag_ghostly_nature_100_ground_dis')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
       'Spectral and untouchable by mundane weapons, they cannot wield physical arms or don ' +
@@ -417,8 +423,10 @@ const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 h
 const GHOSTLY_IMMUNITY = [100, 50, 0];
 const SPELL_RECORDS = [
   ...GHOSTLY_IMMUNITY.flatMap((mag) => [
-    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev`, mag, true),
-    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground`, mag, false),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev_dis`, mag, true, true),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev_nodis`, mag, true, false),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground_dis`, mag, false, true),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground_nodis`, mag, false, false),
   ]),
   buildGhostCurseSpell(),
   buildWraithAbility(),
@@ -444,10 +452,9 @@ writeFileSync(OUT, plugin);
 // ---------------------------------------------------------------------------
 const text = plugin.toString('binary');
 const required = [
-  ['ag_ghostly_nature_100_lev',    'Ghostly Nature 100% + levitate ID'],
-  ['ag_ghostly_nature_100_ground', 'Ghostly Nature 100% grounded ID'],
-  ['ag_ghostly_nature_50_lev',     'Ghostly Nature 50% + levitate ID'],
-  ['ag_ghostly_nature_0_ground',   'Ghostly Nature 0% grounded ID'],
+  ['ag_ghostly_nature_100_ground_dis', 'Ghostly Nature 100% grounded + disease ID'],
+  ['ag_ghostly_nature_50_lev_nodis', 'Ghostly Nature 50% + levitate, no disease ID'],
+  ['ag_ghostly_nature_0_ground_nodis', 'Ghostly Nature 0% grounded, no disease ID'],
   ['ag_ghost_curse',             'Ghost Curse spell ID'],
   ['ag_wraith_sul',              'Wraith ability ID'],
   ['ag_wraith_grave_fatigue',    'Wraith Grave Curse Fatigue ID'],
@@ -532,13 +539,19 @@ for (let i = 0; i < plugin.length - 16; i++) {
   }
 }
 
-for (const [id, resist, withLevitate] of [
-  ['ag_ghostly_nature_100_lev', 100, true],
-  ['ag_ghostly_nature_100_ground', 100, false],
-  ['ag_ghostly_nature_50_lev', 50, true],
-  ['ag_ghostly_nature_50_ground', 50, false],
-  ['ag_ghostly_nature_0_lev', 0, true],
-  ['ag_ghostly_nature_0_ground', 0, false],
+for (const [id, resist, withLevitate, withDiseaseResist] of [
+  ['ag_ghostly_nature_100_lev_dis', 100, true, true],
+  ['ag_ghostly_nature_100_lev_nodis', 100, true, false],
+  ['ag_ghostly_nature_100_ground_dis', 100, false, true],
+  ['ag_ghostly_nature_100_ground_nodis', 100, false, false],
+  ['ag_ghostly_nature_50_lev_dis', 50, true, true],
+  ['ag_ghostly_nature_50_lev_nodis', 50, true, false],
+  ['ag_ghostly_nature_50_ground_dis', 50, false, true],
+  ['ag_ghostly_nature_50_ground_nodis', 50, false, false],
+  ['ag_ghostly_nature_0_lev_dis', 0, true, true],
+  ['ag_ghostly_nature_0_lev_nodis', 0, true, false],
+  ['ag_ghostly_nature_0_ground_dis', 0, false, true],
+  ['ag_ghostly_nature_0_ground_nodis', 0, false, false],
 ]) {
   for (let i = 0; i < plugin.length - 16; i++) {
     if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
@@ -576,6 +589,16 @@ for (const [id, resist, withLevitate] of [
       }
     } else if (!rnw || rnw.mag !== resist) {
       console.error(`validation FAILED: ${id} resist normal weapons ENAM`, enams);
+      ok = false;
+    }
+    const commonDis = enams.find((c) => c.e === FX.RESIST_COMMON_DISEASE);
+    if (withDiseaseResist) {
+      if (!commonDis || commonDis.mag !== 100) {
+        console.error(`validation FAILED: ${id} missing common disease resist ENAM`, enams);
+        ok = false;
+      }
+    } else if (commonDis) {
+      console.error(`validation FAILED: ${id} should omit common disease resist ENAM`, enams);
       ok = false;
     }
     break;

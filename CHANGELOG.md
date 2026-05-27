@@ -6,7 +6,8 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- **Ghostly Levitation** mod setting (default on); six **Ghostly Nature** records (`immunity` × `lev` / `ground`)
+- **Common Disease Immunity** mod setting (default on); twelve **Ghostly Nature** records (`immunity` × `lev`/`ground` × `dis`/`nodis`)
+- **Levitation** mod setting (default off)
 - **[PLAYERS.md](PLAYERS.md)** — player-focused install, settings, and troubleshooting guide
 - Mod settings (**Options → Scripts → Ancestor Ghost**): Normal Weapons Immunity
 - Three **Ghostly Nature** ability records (`_100` / `_50` / `_0`); Lua grants one matching the immunity setting
@@ -16,9 +17,10 @@ All notable changes to this project are documented here.
 
 ### Changed
 
+- **Levitation** default is now **off** (was on)
 - **Ghost Curse** magicka cost **9** (`SPDT` flags `0`; `F_Autocalc` was forcing ~40)
 - **README.md** shortened; player details moved to **PLAYERS.md**
-- Ghostly Nature no longer on race `NPCS` (Lua grants the correct variant)
+- Race `NPCS` defaults to `ag_ghostly_nature_100_ground_dis`; Lua swaps to the variant matching mod settings
 - Tomb-wraith kit moved from mod setting to **Bonebiter** birthsign at character creation
 
 ### Removed

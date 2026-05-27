@@ -31,8 +31,8 @@ If options or equipment rules do nothing, the **scripts** file is probably not e
 Every Ancestor Ghost gets the following:
 
 - **Look:** Ghost head and robe; flesh slots hidden; Chameleon 50%.
-- **Ghostly Nature:** Constant ability with Chameleon 50%. Optional **Levitate** (magnitude 10) and resist to normal weapons are set in mod options below.
-- **Resists:** Frost and poison 100% (always).
+- **Ghostly Nature:** Constant ability with Chameleon 50%. Optional **Levitate** (magnitude 10), **disease resistance**, and resist to normal weapons are set in mod options below.
+- **Resists:** Frost and poison 100% (always). Common disease 100% when **Common Disease Immunity** is enabled on Ghostly Nature (default on).
 - **Magicka:** Fortify Maximum Magicka at **3× Intelligence** (similar to The Mage birthsign, with a stronger multiplier).
 - **Starting spell:** **Ghost Curse** (touch, **9** magicka): drains endurance and fatigue, damages health.
 - **Combat:** Hand-to-hand and Ghost Curse only. No weapons, armour, or clothing.
@@ -58,9 +58,13 @@ Open **Options**, then **Scripts**, then **Ancestor Ghost** (from the pause menu
 - **50%:** Half damage from normal weapons.
 - **None:** You can be hurt by normal weapons like a living character.
 
-Immunity and levitation options each change which **Ghostly Nature** record you have (six combinations). The spell list still shows the name **Ghostly Nature** once.
+All three options below swap which **Ghostly Nature** record you have (twelve combinations). Your spell list still shows **Ghostly Nature** once.
 
-### Ghostly Levitation (default: on)
+### Common Disease Immunity (default: on)
+
+When enabled, **Ghostly Nature** includes 100% resist to common disease. Turn off to catch common diseases like a living character.
+
+### Levitation (default: off)
 
 When enabled, **Ghostly Nature** includes constant Levitate (magnitude 10). Turn off to stay grounded while keeping your other ghost traits.
 

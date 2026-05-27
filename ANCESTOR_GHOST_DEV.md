@@ -24,7 +24,7 @@ playable-ancestor-ghost/
 └── .cursor/rules/              # Agent guidance (MCP, vendored io_scene_mw)
 ```
 
-Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 11 SPEL + 1 RACE + 1 BSGN.
+Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 17 SPEL + 1 RACE + 1 BSGN.
 
 **Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It rebuilds `ancestor_ghost.omwaddon` and attaches **one zip** (`ancestor-ghost-<tag>.zip`) containing the full mod folder (`ancestor-ghost/`: `.omwaddon`, `.omwscripts`, `scripts/`, `l10n/`, `Meshes/`, `Textures/`, docs). Manual test: Actions → Release build → Run workflow.
 
@@ -41,8 +41,9 @@ Script `onLoad` also tries an early apply; the first-frame pass is the reliable 
 
 | Setting | Default | Effect |
 |---|---|---|
-| Normal Weapons Immunity | 100% | Swaps **Ghostly Nature** resist-normal-weapons (`_*_lev` / `_*_ground` × 100 / 50 / 0) |
-| Ghostly Levitation | on | Swaps levitate vs grounded **Ghostly Nature** variant (same immunity suffix) |
+| Normal Weapons Immunity | 100% | Swaps **Ghostly Nature** resist-normal-weapons (`_*_{lev,ground}_{dis,nodis}` × 100 / 50 / 0) |
+| Common Disease Immunity | on | **Ghostly Nature** includes resist common disease |
+| Levitation | off | **Ghostly Nature** includes Levitate 10 |
 
 **Bonebiter birthsign** (`ag_sign_bonebiter`): at character creation, grants `ag_wraith_sul`, Grave Curse spells, and **Bonebiter** (replaces the old wraith mod-setting toggle).
 
@@ -55,7 +56,7 @@ Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 - **Head:** morpher `ag\ag_head.nif` (NPC look-at / talk).
 - **Torso + hands:** rigid ghost robe + hands in `ag\ag_chest.nif`.
 - **Hidden flesh:** invisible stubs (neck, groin, arms, legs, hair) via NiAlphaProperty test NEVER.
-- **Look / movement:** Optional Levitate 10 and Chameleon 50% on **Ghostly Nature** (ESP; one of six immunity×levitate variants).
+- **Look / movement:** Optional Levitate 10 and Chameleon 50% on **Ghostly Nature** (ESP; one of twelve immunity×levitate×disease variants).
 
 **RACE flags:** `0x01` (Playable only). Do not set Beast Race (`0x02`) with biped heads.
 
@@ -71,7 +72,7 @@ Built by `tools/build_esp.mjs`. Master: `Morrowind.esm`.
 
 ### SPEL: Ghostly Nature variants (Ability)
 
-Six records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}`. Shared on all: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. `_*_lev` adds Levitate 10; `_*_ground` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_lev`. `balance.lua` strips the other five and `spells:add`s the record matching **Normal Weapons Immunity** and **Ghostly Levitation**. Wraith kit is granted via **Bonebiter** birthsign at character creation. Legacy three-variant IDs (`ag_ghostly_nature_100` without suffix, etc.) are stripped on apply.
+Twelve records, same display name **Ghostly Nature**: `ag_ghostly_nature_{100,50,0}_{lev,ground}_{dis,nodis}`. Shared on all: Chameleon 50, Resist Frost / Poison 100, Fortify Maximum Magicka 20. `_*_lev_*` adds Levitate 10; `_*_ground_*` omits it. `_*_dis` adds Resist Common Disease 100; `_*_nodis` omits it. Only 100% and 50% include Resist Normal Weapons at that magnitude. Chargen default on race `NPCS`: `ag_ghostly_nature_100_ground_dis`. `balance.lua` strips the other eleven and `spells:add`s the record matching all three mod settings. Wraith kit is granted via **Bonebiter** birthsign at character creation. Legacy spell IDs (including the six-variant `_lev` / `_ground` names without `_dis` / `_nodis`) are stripped on apply.
 
 ### BSGN: `ag_sign_bonebiter` (Bonebiter)
 
@@ -102,7 +103,7 @@ Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 - `global.lua` — unequips locked slots every 0.25 s for `ancestor_ghost` race.
 - `player.lua` — tutorial on equip block; applies balance on first frame and when settings change.
 
-Racial spells come from RACE `NPCS` in the ESP, not Lua.
+Racial **Ghost Curse** comes from RACE `NPCS` in the ESP; **Ghostly Nature** variant is swapped by Lua from mod settings.
 
 ## Known limitations
 

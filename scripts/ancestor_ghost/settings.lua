@@ -34,6 +34,13 @@ function M.registerGroup()
         },
       },
       {
+        key = config.settingDiseaseResistKey,
+        renderer = 'checkbox',
+        name = 'commonDiseaseImmunity',
+        description = 'commonDiseaseImmunityDescription',
+        default = config.settingDefaults.commonDiseaseImmunity,
+      },
+      {
         key = config.settingLevitateKey,
         renderer = 'checkbox',
         name = 'ghostlyLevitate',
