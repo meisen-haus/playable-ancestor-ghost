@@ -7,7 +7,6 @@ local self = require('openmw.self')
 local config = require('scripts.ancestor_ghost.config')
 local settings = require('scripts.ancestor_ghost.settings')
 local balance = require('scripts.ancestor_ghost.balance')
-local playerSettings = require('scripts.ancestor_ghost.player_settings')
 
 pcall(settings.registerPage)
 pcall(settings.registerGroup)

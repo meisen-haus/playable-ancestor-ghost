@@ -12,10 +12,20 @@ local function snapImmunity(value)
   return 100
 end
 
+local function readBool(section, key, defaultKey)
+  local v = section:get(key)
+  if v == nil then
+    return config.settingDefaults[defaultKey]
+  end
+  return v == true
+end
+
 function M.readFromStorage()
   local section = storage.playerSection(config.settingsGroupKey)
   return {
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
+    levitate = readBool(section, config.settingLevitateKey, 'ghostlyLevitate'),
+    diseaseResist = readBool(section, config.settingDiseaseResistKey, 'commonDiseaseImmunity'),
   }
 end
 

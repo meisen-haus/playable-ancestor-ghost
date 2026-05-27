@@ -18,10 +18,9 @@ local function stripLegacySpells(player)
   end
 end
 
-local function applyGhostlyNature(player, immunityMag)
+local function applyGhostlyNature(player, immunityMag, levitate, diseaseResist)
   local spells = types.Actor.spells(player)
-  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[immunityMag]
-    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+  local target = config.ghostlyNatureSpellId(immunityMag, levitate, diseaseResist)
   for _, spellId in ipairs(config.GHOSTLY_NATURE_VARIANTS) do
     if spellId ~= target and spells[spellId] then
       spells:remove(spellId)
@@ -32,9 +31,8 @@ local function applyGhostlyNature(player, immunityMag)
   end
 end
 
-local function ghostlyNatureMatches(player, immunityMag)
-  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[immunityMag]
-    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+local function ghostlyNatureMatches(player, immunityMag, levitate, diseaseResist)
+  local target = config.ghostlyNatureSpellId(immunityMag, levitate, diseaseResist)
   return types.Actor.spells(player)[target] ~= nil
 end
 
@@ -46,9 +44,19 @@ local function applyToPlayer(player, settings)
 
   stripLegacySpells(player)
   settings = settings or playerSettings.readFromStorage()
-  applyGhostlyNature(player, settings.normalWeaponsImmunity)
+  applyGhostlyNature(
+    player,
+    settings.normalWeaponsImmunity,
+    settings.levitate,
+    settings.diseaseResist
+  )
 
-  if not ghostlyNatureMatches(player, settings.normalWeaponsImmunity) then
+  if not ghostlyNatureMatches(
+    player,
+    settings.normalWeaponsImmunity,
+    settings.levitate,
+    settings.diseaseResist
+  ) then
     return false
   end
   return true
