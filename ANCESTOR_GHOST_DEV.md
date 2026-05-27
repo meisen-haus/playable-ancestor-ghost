@@ -74,7 +74,9 @@ Three records, same display name **Ghostly Nature**: `ag_ghostly_nature_100`, `a
 
 ### BSGN: `ag_sign_bonebiter` (Bonebiter)
 
-Display name **Bonebiter**. Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance, 100% resist shock), `ag_wraith_grave_fatigue`, `ag_wraith_grave_strength`, `ag_wraith_bonebiter`. Replaces the former **Wraith of Sul-Senipul** mod-setting toggle.
+Display name **Bonebiter**. Texture `Birthsigns\Tx_birth_bonebiter.tga` (256×128, same format as vanilla birthsigns). Rebuild: `node tools/build_bonebiter_birthsign_texture.mjs` (contrast + blue bow constellation lines on `tools/source/bonebiter_birthsign.png`, then scale).
+
+Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance, 100% resist shock), `ag_wraith_grave_fatigue`, `ag_wraith_grave_strength`, `ag_wraith_bonebiter`. Replaces the former **Wraith of Sul-Senipul** mod-setting toggle.
 
 ### SPEL: `ag_ghost_curse` (touch spell)
 

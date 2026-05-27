@@ -388,6 +388,7 @@ function buildBonebiterBirthsign() {
   return record('BSGN', [
     subrecord('NAME', zstring('ag_sign_bonebiter')),
     subrecord('FNAM', zstring('Bonebiter')),
+    subrecord('TNAM', zstring('Birthsigns\\Tx_birth_bonebiter.tga')),
     subrecord('DESC', zstring(
       'Born under the wraith-star of Sul-Senipul, you are a tomb-bound hunger that gnaws at bone and sinew. ' +
       'The grave grants you endurance beyond the dust, immunity to shock, and curses to drain the living.'
