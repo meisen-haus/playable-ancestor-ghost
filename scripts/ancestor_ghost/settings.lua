@@ -23,13 +23,6 @@ function M.registerGroup()
     order = 0,
     settings = {
       {
-        key = config.settingWraithKey,
-        renderer = 'checkbox',
-        name = 'wraithOfSulSenipul',
-        description = 'wraithOfSulSenipulDescription',
-        default = config.settingDefaults.wraithOfSulSenipul,
-      },
-      {
         key = config.settingNormalWeaponsKey,
         renderer = 'select',
         name = 'normalWeaponsImmunity',
@@ -39,6 +32,20 @@ function M.registerGroup()
           l10n = 'AncestorGhost',
           items = { 100, 50, 0 },
         },
+      },
+      {
+        key = config.settingDiseaseResistKey,
+        renderer = 'checkbox',
+        name = 'commonDiseaseImmunity',
+        description = 'commonDiseaseImmunityDescription',
+        default = config.settingDefaults.commonDiseaseImmunity,
+      },
+      {
+        key = config.settingLevitateKey,
+        renderer = 'checkbox',
+        name = 'ghostlyLevitate',
+        description = 'ghostlyLevitateDescription',
+        default = config.settingDefaults.ghostlyLevitate,
       },
       {
         key = config.settingUndeadFriendlyKey,

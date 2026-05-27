@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
  * Builds ancestor_ghost.omwaddon containing:
- *   - 8×  SPEL records  (3× ghostly nature immunity, ghost curse, wraith kit)
+ *   - 17× SPEL records  (12× ghostly nature immunity×levitate×disease, ghost curse, wraith kit)
+ *   - 1×  BSGN record   (Bonebiter birthsign — wraith kit at character creation)
  *   - BODY records      (Dunmer placeholder + ag\ stubs; 1 head + 1 hair per gender)
  *   - 1×  RACE record   (Ancestor Ghost playable race)
  *
@@ -20,10 +21,12 @@ const OUT = join(__dirname, '..', 'ancestor_ghost.omwaddon');
 // loadmgef.cpp), NOT legacy editor effect numbers.
 // ---------------------------------------------------------------------------
 const FX = {
+  LEVITATE              : 10, // Levitate (constant on Ghostly Nature)
   CHAMELEON             : 40, // Chameleon (OpenMW sMagicEffectIds index; 41 is Light)
   RESIST_NORMAL_WEAPONS : 98, // ResistNormalWeapons (vanilla resist fire_75 uses 90)
   RESIST_FROST          : 91, // ResistFrost (Ghostly Nature)
   RESIST_SHOCK          : 92, // ResistShock (Wraith)
+  RESIST_COMMON_DISEASE : 94, // ResistCommonDisease
   RESIST_POISON         : 97, // ResistPoison
   DRAIN_ATTRIBUTE       : 17, // DrainAttribute
   DRAIN_FATIGUE         : 20, // DrainFatigue
@@ -189,17 +192,31 @@ function enam({ effectId, skillId = -1, attributeId = -1, range = 0, area = 0, d
 }
 
 // ---------------------------------------------------------------------------
-// SPEL: ag_ghostly_nature_{100,50,0}  (racial ability — Scripts picks one)
+// SPEL: ag_ghostly_nature_{100,50,0}_{lev,ground}_{dis,nodis}  (balance.lua picks one)
 // ---------------------------------------------------------------------------
-function buildGhostlyNatureSpell(spellId, resistNormalWeapons) {
+function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate, withDiseaseResist) {
   const enams = [
     subrecord('ENAM', enam({ effectId: FX.CHAMELEON,           duration: 0, magMin: 50,  magMax: 50  })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_FROST,        duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.RESIST_POISON,       duration: 0, magMin: 100, magMax: 100 })),
     subrecord('ENAM', enam({ effectId: FX.FORTIFY_MAX_MAGICKA, duration: 0, magMin: 20,  magMax: 20  })),
   ];
+  if (withDiseaseResist) {
+    enams.push(
+      subrecord('ENAM', enam({ effectId: FX.RESIST_COMMON_DISEASE, duration: 0, magMin: 100, magMax: 100 })),
+    );
+  }
+  if (withLevitate) {
+    enams.unshift(subrecord('ENAM', enam({
+      effectId: FX.LEVITATE,
+      duration: 0,
+      magMin: 10,
+      magMax: 10,
+    })));
+  }
   if (resistNormalWeapons > 0) {
-    enams.splice(1, 0, subrecord('ENAM', enam({
+    const insertAt = withLevitate ? 1 : 0;
+    enams.splice(insertAt, 0, subrecord('ENAM', enam({
       effectId: FX.RESIST_NORMAL_WEAPONS,
       duration: 0,
       magMin: resistNormalWeapons,
@@ -229,7 +246,7 @@ function buildGhostCurseSpell() {
   ]);
 }
 
-// Wraith of Sul-Senipul (optional; granted via Lua when enabled in mod settings)
+// Tomb-wraith kit (granted via Bonebiter birthsign at character creation)
 function buildWraithAbility() {
   return record('SPEL', [
     subrecord('NAME', zstring('ag_wraith_sul')),
@@ -368,7 +385,7 @@ function buildRaceRecord() {
     subrecord('RADT', radt),
     // Default racial ability at chargen; balance.lua swaps variant from mod settings.
     subrecord('NPCS', padId('ag_ghost_curse')),
-    subrecord('NPCS', padId('ag_ghostly_nature_100')),
+    subrecord('NPCS', padId('ag_ghostly_nature_100_ground_dis')),
     subrecord('DESC', zstring(
       'The Ancestor Ghost is an undead spirit of the Dunmer, bound to the mortal plane. ' +
       'Spectral and untouchable by mundane weapons, they cannot wield physical arms or don ' +
@@ -381,26 +398,50 @@ function buildRaceRecord() {
 }
 
 // ---------------------------------------------------------------------------
+// BSGN: Bonebiter (Wraith of Sul-Senipul — pick at character creation)
+// ---------------------------------------------------------------------------
+function buildBonebiterBirthsign() {
+  return record('BSGN', [
+    subrecord('NAME', zstring('ag_sign_bonebiter')),
+    subrecord('FNAM', zstring('Bonebiter')),
+    subrecord('TNAM', zstring('Birthsigns\\Tx_birth_bonebiter.tga')),
+    subrecord('DESC', zstring(
+      'Born under the wraith-star of Sul-Senipul, you are a tomb-bound hunger that gnaws at bone and sinew. ' +
+      'The grave grants you endurance beyond the dust, immunity to shock, and curses to drain the living.'
+    )),
+    subrecord('NPCS', padId('ag_wraith_sul')),
+    subrecord('NPCS', padId('ag_wraith_grave_fatigue')),
+    subrecord('NPCS', padId('ag_wraith_grave_strength')),
+    subrecord('NPCS', padId('ag_wraith_bonebiter')),
+  ]);
+}
+
+// ---------------------------------------------------------------------------
 // Assemble plugin
 // ---------------------------------------------------------------------------
 const bodyRecords  = buildAllBodyRecords();            // 22 skin + 2 head + 2 hair = 26 BODY
+const GHOSTLY_IMMUNITY = [100, 50, 0];
 const SPELL_RECORDS = [
-  buildGhostlyNatureSpell('ag_ghostly_nature_100', 100),
-  buildGhostlyNatureSpell('ag_ghostly_nature_50', 50),
-  buildGhostlyNatureSpell('ag_ghostly_nature_0', 0),
+  ...GHOSTLY_IMMUNITY.flatMap((mag) => [
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev_dis`, mag, true, true),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_lev_nodis`, mag, true, false),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground_dis`, mag, false, true),
+    buildGhostlyNatureSpell(`ag_ghostly_nature_${mag}_ground_nodis`, mag, false, false),
+  ]),
   buildGhostCurseSpell(),
   buildWraithAbility(),
   buildWraithGraveFatigue(),
   buildWraithGraveStrength(),
   buildWraithBonebiter(),
 ];
-const CONTENT_RECORDS = SPELL_RECORDS.length + bodyRecords.length + 1;
+const CONTENT_RECORDS = SPELL_RECORDS.length + bodyRecords.length + 2;
 
 const allRecords = [
   buildTes3Header(CONTENT_RECORDS),
   ...SPELL_RECORDS,
   ...bodyRecords,
   buildRaceRecord(),
+  buildBonebiterBirthsign(),
 ];
 
 const plugin = Buffer.concat(allRecords);
@@ -411,13 +452,14 @@ writeFileSync(OUT, plugin);
 // ---------------------------------------------------------------------------
 const text = plugin.toString('binary');
 const required = [
-  ['ag_ghostly_nature_100',      'Ghostly Nature 100% ID'],
-  ['ag_ghostly_nature_50',       'Ghostly Nature 50% ID'],
-  ['ag_ghostly_nature_0',        'Ghostly Nature 0% ID'],
+  ['ag_ghostly_nature_100_ground_dis', 'Ghostly Nature 100% grounded + disease ID'],
+  ['ag_ghostly_nature_50_lev_nodis', 'Ghostly Nature 50% + levitate, no disease ID'],
+  ['ag_ghostly_nature_0_ground_nodis', 'Ghostly Nature 0% grounded, no disease ID'],
   ['ag_ghost_curse',             'Ghost Curse spell ID'],
   ['ag_wraith_sul',              'Wraith ability ID'],
   ['ag_wraith_grave_fatigue',    'Wraith Grave Curse Fatigue ID'],
   ['ag_wraith_bonebiter',        'Bonebiter spell ID'],
+  ['ag_sign_bonebiter',          'Bonebiter birthsign ID'],
   ['ancestor_ghost',             'Race record ID'],
   ['Ancestor Ghost',             'Race display name'],
   ['ag_head_m_01',               'Male head body part ID'],
@@ -497,10 +539,19 @@ for (let i = 0; i < plugin.length - 16; i++) {
   }
 }
 
-for (const [id, resist] of [
-  ['ag_ghostly_nature_100', 100],
-  ['ag_ghostly_nature_50', 50],
-  ['ag_ghostly_nature_0', 0],
+for (const [id, resist, withLevitate, withDiseaseResist] of [
+  ['ag_ghostly_nature_100_lev_dis', 100, true, true],
+  ['ag_ghostly_nature_100_lev_nodis', 100, true, false],
+  ['ag_ghostly_nature_100_ground_dis', 100, false, true],
+  ['ag_ghostly_nature_100_ground_nodis', 100, false, false],
+  ['ag_ghostly_nature_50_lev_dis', 50, true, true],
+  ['ag_ghostly_nature_50_lev_nodis', 50, true, false],
+  ['ag_ghostly_nature_50_ground_dis', 50, false, true],
+  ['ag_ghostly_nature_50_ground_nodis', 50, false, false],
+  ['ag_ghostly_nature_0_lev_dis', 0, true, true],
+  ['ag_ghostly_nature_0_lev_nodis', 0, true, false],
+  ['ag_ghostly_nature_0_ground_dis', 0, false, true],
+  ['ag_ghostly_nature_0_ground_nodis', 0, false, false],
 ]) {
   for (let i = 0; i < plugin.length - 16; i++) {
     if (plugin.slice(i, i + 4).toString('ascii') !== 'SPEL') continue;
@@ -520,6 +571,16 @@ for (const [id, resist] of [
       }
     }
     if (spellId !== id) continue;
+    const lev = enams.find((c) => c.e === FX.LEVITATE);
+    if (withLevitate) {
+      if (!lev || lev.mag !== 10) {
+        console.error(`validation FAILED: ${id} missing levitate ENAM`, enams);
+        ok = false;
+      }
+    } else if (lev) {
+      console.error(`validation FAILED: ${id} should omit levitate ENAM`, enams);
+      ok = false;
+    }
     const rnw = enams.find((c) => c.e === FX.RESIST_NORMAL_WEAPONS);
     if (resist === 0) {
       if (rnw) {
@@ -528,6 +589,16 @@ for (const [id, resist] of [
       }
     } else if (!rnw || rnw.mag !== resist) {
       console.error(`validation FAILED: ${id} resist normal weapons ENAM`, enams);
+      ok = false;
+    }
+    const commonDis = enams.find((c) => c.e === FX.RESIST_COMMON_DISEASE);
+    if (withDiseaseResist) {
+      if (!commonDis || commonDis.mag !== 100) {
+        console.error(`validation FAILED: ${id} missing common disease resist ENAM`, enams);
+        ok = false;
+      }
+    } else if (commonDis) {
+      console.error(`validation FAILED: ${id} should omit common disease resist ENAM`, enams);
       ok = false;
     }
     break;

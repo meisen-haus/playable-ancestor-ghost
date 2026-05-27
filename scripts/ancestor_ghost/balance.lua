@@ -1,4 +1,4 @@
--- Applies in-game settings to Ancestor Ghost players (ghostly nature variant + wraith kit).
+-- Applies in-game settings to Ancestor Ghost players (ghostly nature variant).
 
 local types = require('openmw.types')
 local config = require('scripts.ancestor_ghost.config')
@@ -18,10 +18,9 @@ local function stripLegacySpells(player)
   end
 end
 
-local function applyGhostlyNature(player, immunityMag)
+local function applyGhostlyNature(player, immunityMag, levitate, diseaseResist)
   local spells = types.Actor.spells(player)
-  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[immunityMag]
-    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+  local target = config.ghostlyNatureSpellId(immunityMag, levitate, diseaseResist)
   for _, spellId in ipairs(config.GHOSTLY_NATURE_VARIANTS) do
     if spellId ~= target and spells[spellId] then
       spells:remove(spellId)
@@ -32,34 +31,8 @@ local function applyGhostlyNature(player, immunityMag)
   end
 end
 
-local function enableWraith(player)
-  local spells = types.Actor.spells(player)
-  if spells[config.SPELL_WRAITH] then
-    spells:remove(config.SPELL_WRAITH)
-  end
-  spells:add(config.SPELL_WRAITH)
-  for _, spellId in ipairs(config.WRAITH_SPELLS) do
-    if not spells[spellId] then
-      spells:add(spellId)
-    end
-  end
-end
-
-local function disableWraith(player)
-  local spells = types.Actor.spells(player)
-  for _, spellId in ipairs(config.WRAITH_SPELLS) do
-    if spells[spellId] then
-      spells:remove(spellId)
-    end
-  end
-  if spells[config.SPELL_WRAITH] then
-    spells:remove(config.SPELL_WRAITH)
-  end
-end
-
-local function ghostlyNatureMatches(player, immunityMag)
-  local target = config.GHOSTLY_NATURE_BY_IMMUNITY[immunityMag]
-    or config.GHOSTLY_NATURE_BY_IMMUNITY[100]
+local function ghostlyNatureMatches(player, immunityMag, levitate, diseaseResist)
+  local target = config.ghostlyNatureSpellId(immunityMag, levitate, diseaseResist)
   return types.Actor.spells(player)[target] ~= nil
 end
 
@@ -71,17 +44,19 @@ local function applyToPlayer(player, settings)
 
   stripLegacySpells(player)
   settings = settings or playerSettings.readFromStorage()
-  applyGhostlyNature(player, settings.normalWeaponsImmunity)
-  if settings.wraith then
-    enableWraith(player)
-  else
-    disableWraith(player)
-  end
+  applyGhostlyNature(
+    player,
+    settings.normalWeaponsImmunity,
+    settings.levitate,
+    settings.diseaseResist
+  )
 
-  if not ghostlyNatureMatches(player, settings.normalWeaponsImmunity) then
-    return false
-  end
-  if settings.wraith and not types.Actor.spells(player)[config.SPELL_WRAITH] then
+  if not ghostlyNatureMatches(
+    player,
+    settings.normalWeaponsImmunity,
+    settings.levitate,
+    settings.diseaseResist
+  ) then
     return false
   end
   return true

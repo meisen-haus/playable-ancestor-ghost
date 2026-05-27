@@ -6,7 +6,7 @@ An OpenMW mod that adds the **Ancestor Ghost** as a fully playable race.
 
 ## Quick summary
 
-Incorporeal undead: ghost appearance, **Ghost Curse** (9 magicka touch spell), no weapons/armour/clothing (rings and amulets OK). Optional **Wraith of Sul-Senipul** kit and configurable **normal weapons immunity** under **Options → Scripts → Ancestor Ghost**.
+Incorporeal undead: ghost appearance, **Ghost Curse** (9 magicka touch spell), no weapons/armour/clothing (rings and amulets OK). Optional **Bonebiter** birthsign for the tomb-wraith kit; configurable **Ghostly Nature** options under **Options → Scripts → Ancestor Ghost**.
 
 **Requires OpenMW 0.51+** and both `ancestor_ghost.omwaddon` + `ancestor_ghost.omwscripts` enabled.
 

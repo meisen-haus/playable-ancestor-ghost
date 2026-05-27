@@ -2,13 +2,16 @@ AncestorGhost: "Ancestor Ghost"
 settingsPageDescription: "Playable Ancestor Ghost race options. Changes apply when you change a setting (confirmation message on screen)."
 
 modSettings: "Ancestor Ghost"
-modSettingsDescription: "Balance and optional wraith kit."
-
-wraithOfSulSenipul: "Wraith of Sul-Senipul"
-wraithOfSulSenipulDescription: "Grants Grave Curse spells, Bonebiter, and the Wraith ability (+25 Endurance, 100% resist shock)."
+modSettingsDescription: "Options for the Ghostly Nature ability and other balance tweaks."
 
 normalWeaponsImmunity: "Normal Weapons Immunity"
-normalWeaponsImmunityDescription: "Which Ghostly Nature ability you have (100%, 50%, or no resist normal weapons)."
+normalWeaponsImmunityDescription: "Ghostly Nature resist to normal weapons (100%, 50%, or none)."
+
+commonDiseaseImmunity: "Common Disease Immunity"
+commonDiseaseImmunityDescription: "Ghostly Nature includes 100% resist to common disease."
+
+ghostlyLevitate: "Levitation"
+ghostlyLevitateDescription: "Ghostly Nature includes constant Levitate 10 (requires Allow Levitation in OpenMW game settings)."
 
 undeadFriendly: "Undead are friendly"
 undeadFriendlyDescription: "Common tomb undead (skeletons, bonewalkers, ancestral ghosts, and similar) do not attack you. They may still fight back if you strike first."

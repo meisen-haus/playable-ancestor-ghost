@@ -12,12 +12,21 @@ local function snapImmunity(value)
   return 100
 end
 
+local function readBool(section, key, defaultKey)
+  local v = section:get(key)
+  if v == nil then
+    return config.settingDefaults[defaultKey]
+  end
+  return v == true
+end
+
 function M.readFromStorage()
   local section = storage.playerSection(config.settingsGroupKey)
   return {
-    wraith = section:get(config.settingWraithKey) == true,
     normalWeaponsImmunity = snapImmunity(section:get(config.settingNormalWeaponsKey)),
-    undeadFriendly = section:get(config.settingUndeadFriendlyKey) == true,
+    levitate = readBool(section, config.settingLevitateKey, 'ghostlyLevitate'),
+    diseaseResist = readBool(section, config.settingDiseaseResistKey, 'commonDiseaseImmunity'),
+    undeadFriendly = readBool(section, config.settingUndeadFriendlyKey, 'undeadFriendly'),
   }
 end
 
