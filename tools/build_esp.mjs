@@ -116,6 +116,7 @@ const RACE_ID = 'ancestor_ghost';
 // Magnitude 30 → +3.0× INT on the effect, 4× INT total max magicka (base 1.0 + 3.0).
 const GHOSTLY_MAGICKA_BONUS_MULT = 3.0;
 const GHOSTLY_MAGICKA_MULT_MAG = Math.round(GHOSTLY_MAGICKA_BONUS_MULT * 10);
+const GHOSTLY_LEVITATE_MAG = 30;
 
 // Body part type: 0=skin, 1=clothing, 2=armor
 const BPTYPE = 0; // skin
@@ -216,8 +217,8 @@ function buildGhostlyNatureSpell(spellId, resistNormalWeapons, withLevitate, wit
     enams.unshift(subrecord('ENAM', enam({
       effectId: FX.LEVITATE,
       duration: 0,
-      magMin: 10,
-      magMax: 10,
+      magMin: GHOSTLY_LEVITATE_MAG,
+      magMax: GHOSTLY_LEVITATE_MAG,
     })));
   }
   if (resistNormalWeapons > 0) {
@@ -579,7 +580,7 @@ for (const [id, resist, withLevitate, withDiseaseResist] of [
     if (spellId !== id) continue;
     const lev = enams.find((c) => c.e === FX.LEVITATE);
     if (withLevitate) {
-      if (!lev || lev.mag !== 10) {
+      if (!lev || lev.mag !== GHOSTLY_LEVITATE_MAG) {
         console.error(`validation FAILED: ${id} missing levitate ENAM`, enams);
         ok = false;
       }

@@ -31,7 +31,7 @@ If options or equipment rules do nothing, the **scripts** file is probably not e
 Every Ancestor Ghost gets the following:
 
 - **Look:** Ghost head and robe; flesh slots hidden; Chameleon 50%.
-- **Ghostly Nature:** Constant ability with Chameleon 50% and **Water Breathing**. Optional **Levitate** (magnitude 10), **disease resistance**, and **resistance to normal weapons** are set in mod options below.
+- **Ghostly Nature:** Constant ability with Chameleon 50% and **Water Breathing**. Optional **Levitate** (magnitude 30), **disease resistance**, and **resistance to normal weapons** are set in mod options below.
 - **Resists:** Frost and poison 100% (always). Common disease 100% when **Common Disease Immunity** is enabled on Ghostly Nature (default on).
 - **Magicka:** Fortify Maximum Magicka **+3.0× INT** on the effect (magnitude 30); **4× Intelligence** total max magicka (base 1.0× plus the +3.0× bonus).
 - **Starting spell:** **Ghost Curse** (touch, **9** magicka): drains endurance and fatigue, damages health.
@@ -66,7 +66,7 @@ When enabled, **Ghostly Nature** includes 100% resist to common disease. Turn of
 
 ### Levitation (default: off)
 
-When enabled, **Ghostly Nature** includes constant Levitate (magnitude 10). Turn off to stay grounded while keeping your other ghost traits.
+When enabled, **Ghostly Nature** includes constant Levitate (magnitude 30). Turn off to stay grounded while keeping your other ghost traits.
 
 Requires **Allow Levitation** in OpenMW (**Options → Game**, or `[Game]` `allow levitation = true` in `settings.cfg`).
 
