@@ -11,7 +11,7 @@ commonDiseaseImmunity: "Common Disease Immunity"
 commonDiseaseImmunityDescription: "Ghostly Nature includes 100% resistance to common disease."
 
 ghostlyLevitate: "Levitation"
-ghostlyLevitateDescription: "Ghostly Nature includes Levitate 10 (requires Allow Levitation in OpenMW game settings)."
+ghostlyLevitateDescription: "Ghostly Nature includes Levitate 30."
 
 undeadFriendly: "Undead Are Friendly"
 undeadFriendlyDescription: "Tomb undead (skeletons, bonewalkers, ancestral ghosts, and similar) ignore you. They still fight back if you attack first."
