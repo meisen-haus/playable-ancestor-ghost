@@ -110,3 +110,5 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 ## Lore
 
 Based on ancestral ghosts in Dunmer tombs: frost and poison immunity, ghost curse touch, and resistance to normal weapons (configurable). The playable body uses a biped rig with a ghost robe and head, not the floating creature mesh from vanilla.
+
+Body slot layout and bind-pose skinning were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** (structural reference only; that pack is not required to play this mod).
