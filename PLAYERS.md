@@ -30,7 +30,7 @@ If options or equipment rules do nothing, the **scripts** file is probably not e
 
 Every Ancestor Ghost gets the following:
 
-- **Look:** Ghost head and robe; flesh slots hidden; Chameleon 50%.
+- **Look:** Ghost head, weighted robe, and bony hands; flesh slots hidden; Chameleon 50%. In third person the upper body holds a soft “float” pose while invisible legs walk; first-person unready keeps arms lower so magic-ready reads clearly.
 - **Ghostly Nature:** Constant ability with Chameleon 50% and **Water Breathing**. Optional **Levitate** (magnitude 30), **disease resistance**, and **resistance to normal weapons** are set in mod options below.
 - **Resists:** Frost and poison 100% (always). Common disease 100% when **Common Disease Immunity** is enabled on Ghostly Nature (default on).
 - **Magicka:** Fortify Maximum Magicka **+3.0× INT** on the effect (magnitude 30); **4× Intelligence** total max magicka (base 1.0× plus the +3.0× bonus).
@@ -105,6 +105,10 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 
 **Wrong body or missing ghost mesh:** Install the full mod folder, including `Meshes/` and `Textures/`.
 
+**Arms hang straight / upper body bounces while walking:** Update to the latest release (weighted chest + `idle_pose` Lua). Restart OpenMW after replacing `Meshes/` and `scripts/`.
+
 ## Lore
 
 Based on ancestral ghosts in Dunmer tombs: frost and poison immunity, ghost curse touch, and resistance to normal weapons (configurable). The playable body uses a biped rig with a ghost robe and head, not the floating creature mesh from vanilla.
+
+Body slot layout and bind-pose skinning were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** (structural reference only; that pack is not required to play this mod).

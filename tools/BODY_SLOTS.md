@@ -2,17 +2,23 @@
 
 All BODY records in `tools/build_esp.mjs` point at `Meshes/ag/` assets below.
 
-| Slot | ESP path | Builder |
-|------|----------|---------|
-| Head | `ag\ag_head.nif` | `tools/blender/build_vanilla_head_nif.py` (morpher) |
-| Hair | `ag\ag_hair.nif` | `tools/build_invisible_stubs.py` |
-| Neck | `ag\ag_neck.nif` | `tools/build_invisible_stubs.py` |
-| Chest, Hand | `ag\ag_chest.nif` | `tools/blender/build_vanilla_chest_nif.py` (rigid Bip01 root) |
-| Groin | `ag\ag_groin.nif` | `tools/build_invisible_stubs.py` |
-| Wrist / Forearm / UpperArm | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` |
-| Foot / Ankle / Knee / UpperLeg | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` |
+| Slot | ESP path | Source | Notes |
+|------|----------|--------|-------|
+| Head | `ag\ag_head.nif` | `tools/blender/build_vanilla_head_nif.py` | Morpher head |
+| Hair | `ag\ag_hair.nif` | `tools/build_invisible_stubs.py` | Invisible stub |
+| Neck | `ag\ag_neck.nif` | `tools/build_invisible_stubs.py` | Invisible stub |
+| Chest | `ag\ag_chest.nif` | skin ref + `build_vanilla_chest_nif.py` | Pack bind-pose robe; Pelvis/Spine folded → Spine1/Spine2 (float); sleeve chain to Hand; tunic TGA |
+| Hand | `ag\ag_hand.nif` | same builder + `tools/reference/ag_hand_skin_ref.nif` | Pack-style Hand/Finger/Forearm bind pose + `Tx_LicheKing.dds` |
+| Groin | `ag\ag_groin.nif` | `tools/build_invisible_stubs.py` | Invisible stub |
+| Wrist / Forearm / UpperArm | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` | Invisible stubs |
+| Foot / Ankle / Knee / UpperLeg | `ag\ag_*.nif` | `tools/build_invisible_stubs.py` | Invisible stubs |
 
-1st-person arms: `Meshes/Xbase_anim.1st.nif` via `tools/build_invisible_1st_person.py`.
+1st-person:
+- `Meshes/Xbase_anim.1st.nif` via `tools/build_invisible_1st_person.py` (hides Dunmer wrist/forearm/upper-arm shapes)
+- BODY `ag_chest_{m,f}.1st` → `ag\ag_chest.nif` (full robe torso when looking down)
+- BODY `ag_hand_{m,f}.1st` → `ag\ag_hand.nif` (bony hands)
+
+Slot layout (separate Hand BODY, Chest `*.1st` sleeves) and bind-pose skinning were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** as a structural reference. Shipping `Meshes/ag/` NIFs are committed; optional local rebuild copies pack ghosts into gitignored `tools/reference/` (see [reference/README.md](reference/README.md)). Head is Blender-built from vanilla morpher geometry.
 
 ## Full mesh rebuild
 
@@ -32,10 +38,11 @@ node tools/build_esp.mjs
 blender --background tools/blender/ancestor_ghost.blend --python tools/blender/diff_body_slots.py
 ```
 
-## Head vs chest format
+## Mesh format comparison
 
-| | Head | Chest + hands |
-|---|------|---------------|
-| Root | Part-named NiNode (no Bip01 skeleton) | `Bip01` |
-| Deformation | `NiGeomMorpherController` | Rigid `NiSkinInstance` (100% Bip01) |
-| Tri names | contains `Head` | `Tri Chest`, `Tri Right Hand 0`, … |
+| | Head | Chest / arms_1st | Hand |
+|---|------|------------------|------|
+| Root | Part-named NiNode (no Bip01) | `Bip01` | `Bip01` |
+| Deformation | `NiGeomMorpherController` | Weighted `NiSkinInstance` (Dunmer nearest transfer) | Hand-bone skin |
+| Tri names | contains `Head` | `Tri Chest` | `Tri Left Hand 0`, `Tri Right Hand 0` |
+| Texture | `ag\TX_Ghostward_tunic.tga` | `ag\TX_Ghostward_tunic.tga` | `textures\Tx_LicheKing.dds` (vanilla) |

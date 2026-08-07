@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
-Build invisible first-person arm meshes from vanilla Xbase_anim.1st.nif.
+Build first-person arm meshes from vanilla Xbase_anim.1st.nif.
 
 OpenMW/Morrowind draw 1st-person arms from this skeleton NIF, not BODY slots.
 Ship as Meshes/Xbase_anim.1st.nif — overrides vanilla when this mod loads (all
 biped races using xbase_anim; intended for Ancestor Ghost play).
 
+NOTE: Hand BODY parts (ag_hand.nif) DO render in first person via OpenMW's
+body-part attachment system.  Only forearm/wrist/upper-arm shapes from
+Xbase_anim.1st contribute to visible first-person arms.
+
 Run:
-  python tools/build_invisible_1st_person.py
+  blender --background --python tools/build_invisible_1st_person.py
 """
 
 from __future__ import annotations
@@ -25,10 +29,9 @@ MORROWIND = Path(r"C:/Morrowind/Data Files")
 VANILLA_1ST = MORROWIND / "Meshes/Xbase_anim.1st.nif"
 OUT_1ST = MOD_ROOT / "Meshes/Xbase_anim.1st.nif"
 
-# Hide Dunmer flesh in 1st person; third-person ghost uses BODY slot meshes.
+# Hide Dunmer arm flesh in 1st person.  Hand shapes are left alone here because
+# the race's hand BODY parts (ag_hand.nif) take precedence in OpenMW rendering.
 INVISIBLE_TRIS = (
-    "Tri Left Hand",
-    "Tri Right Hand",
     "Tri Left Wrist",
     "Tri Right Wrist",
     "Tri Left Forearm",

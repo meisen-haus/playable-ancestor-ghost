@@ -80,20 +80,24 @@ const AG_ARM = {
 const AG_NECK = { m: 'ag\\ag_neck.nif', f: 'ag\\ag_neck.nif' };
 const AG_GROIN = { m: 'ag\\ag_groin.nif', f: 'ag\\ag_groin.nif' };
 
-// Ghost torso + hands (Chest/Hand slots share ag_chest.nif like vanilla Skins.nif).
+// Ghost torso (pack bind-pose robe; also used in 1st person so looking down shows torso).
 const AG_CHEST = { m: 'ag\\ag_chest.nif', f: 'ag\\ag_chest.nif' };
+// Ghost hands (pack-style finger skin + Tx_LicheKing; separate BODY slot).
+const AG_HAND = { m: 'ag\\ag_hand.nif', f: 'ag\\ag_hand.nif' };
+// First-person chest: full robe (not arms-only) for immersive look-down torso.
+const AG_CHEST_1ST = AG_CHEST;
 
 const AG_SKIN = {
   ...DUNMER_SKIN,
   Neck: AG_NECK,
   Groin: AG_GROIN,
   Chest: AG_CHEST,
-  Hand: AG_CHEST,
+  Hand: AG_HAND,
   ...AG_ARM,
   ...AG_LEG,
 };
 
-// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk; chest stays rigid).
+// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk).
 const HEAD_VARIANTS = {
   m: ['ag\\ag_head.nif'],
   f: ['ag\\ag_head.nif'],
@@ -327,6 +331,7 @@ function buildVariantBodyRecords(partIndex, genderKey, idPrefix, meshes) {
 }
 
 // Build all BODY records: Dunmer skin (ag\ leg stubs) + head/hair variants for char gen.
+// First-person overrides use the Morrowind/OpenMW ".1st" NAME suffix convention.
 function buildAllBodyRecords() {
   const records = [];
 
@@ -336,6 +341,12 @@ function buildAllBodyRecords() {
     records.push(buildBodyRecord(`ag_${name.toLowerCase()}_m`, idx, false, skin.m));
     records.push(buildBodyRecord(`ag_${name.toLowerCase()}_f`, idx, true, skin.f));
   }
+
+  // 1st-person full robe torso + bony hands (OpenMW ".1st" BODY NAME convention).
+  records.push(buildBodyRecord('ag_chest_m.1st', PART.Chest, false, AG_CHEST_1ST.m));
+  records.push(buildBodyRecord('ag_chest_f.1st', PART.Chest, true, AG_CHEST_1ST.f));
+  records.push(buildBodyRecord('ag_hand_m.1st', PART.Hand, false, AG_HAND.m));
+  records.push(buildBodyRecord('ag_hand_f.1st', PART.Hand, true, AG_HAND.f));
 
   records.push(...buildVariantBodyRecords(PART.Head, 'm', 'ag_head', HEAD_VARIANTS.m));
   records.push(...buildVariantBodyRecords(PART.Head, 'f', 'ag_head', HEAD_VARIANTS.f));
@@ -476,7 +487,10 @@ const required = [
   ['ag\\ag_head.nif',            'Ghost head mesh (morpher, Head-bone attach)'],
   ['ag\\ag_neck.nif',             'Invisible neck stub mesh path'],
   ['ag\\ag_groin.nif',            'Invisible groin stub mesh path'],
-  ['ag\\ag_chest.nif',            'Ghost chest/hand mesh path'],
+  ['ag\\ag_chest.nif',            'Ghost chest mesh path'],
+  ['ag\\ag_hand.nif',             'Ghost hand mesh path'],
+  ['ag_chest_m.1st',             'Male first-person chest body part ID'],
+  ['ag_hand_m.1st',              'Male first-person hand body part ID'],
   ['ag\\ag_wrist.nif',            'Invisible arm stub mesh path'],
   ['ag\\ag_foot.nif',            'Invisible leg stub mesh path'],
   ['ag\\ag_hair.nif',            'Invisible hair stub mesh path'],
