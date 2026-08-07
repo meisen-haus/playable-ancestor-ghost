@@ -11,6 +11,7 @@ local config = require('scripts.ancestor_ghost.config')
 local settings = require('scripts.ancestor_ghost.settings')
 local balance = require('scripts.ancestor_ghost.balance')
 local undeadFriendly = require('scripts.ancestor_ghost.undead_friendly_player')
+local idlePose = require('scripts.ancestor_ghost.idle_pose')
 
 pcall(settings.registerPage)
 pcall(settings.registerGroup)
@@ -65,10 +66,11 @@ return {
       undeadFriendly.syncToGlobal()
     end,
 
-    onFrame = function()
+    onFrame = function(dt)
       if not balanceSynced then
         trySyncBalance(false)
       end
+      idlePose.onFrame(dt)
     end,
   },
 

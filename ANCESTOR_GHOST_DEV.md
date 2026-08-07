@@ -17,6 +17,7 @@ playable-ancestor-ghost/
 │   ├── build_esp.mjs
 │   ├── build_invisible_stubs.py
 │   ├── build_invisible_1st_person.py
+│   ├── reference/              # Bind-pose skin refs (see reference/README.md)
 │   └── blender/
 │       ├── ancestor_ghost.blend
 │       ├── build_vanilla_head_nif.py
@@ -55,7 +56,10 @@ Player-facing install and settings: **[PLAYERS.md](PLAYERS.md)**.
 ## Visual approach (current)
 
 - **Head:** morpher `ag\ag_head.nif` (NPC look-at / talk).
-- **Torso + hands:** rigid ghost robe + hands in `ag\ag_chest.nif`.
+- **Torso:** weighted ghost robe in `ag\ag_chest.nif` (pack bind-pose skin ref → our tunic TGA; Pelvis/Spine folded to Spine1/Spine2).
+- **Hands:** `ag\ag_hand.nif` (pack-style hand skin + vanilla `Tx_LicheKing.dds`).
+- **1st person:** `ag_chest_*.1st` → full `ag_chest.nif` torso; `ag_hand_*.1st` → hands; Dunmer arm tris hidden in `Xbase_anim.1st.nif`.
+- **Idle float:** `idle_pose.lua` (from `player.lua` `onFrame`) blends vanilla `idlespell` onto **Torso + arms** in third person when stance is Nothing. Must not `cancel` IdleSpell while stance is Spell (engine magic-ready uses the same group). Skipped in first person.
 - **Hidden flesh:** invisible stubs (neck, groin, arms, legs, hair) via NiAlphaProperty test NEVER.
 - **Look / movement:** Optional Levitate 30 and Chameleon 50% on **Ghostly Nature** (ESP; one of twelve resistance-to-normal-weapons × levitate × disease variants).
 
@@ -85,13 +89,14 @@ Grants at character creation: `ag_wraith_sul` (ability **Wraith**: +25 Endurance
 
 Drain Endurance 5, Drain Fatigue 10, Damage Health 1–10. **Magicka cost 9** (`SPDT` cost `9`, **flags `0`**). Do not set `F_Autocalc` (`flags 0x1`) — OpenMW then ignores the cost field and recalculates ~40 like vanilla `Ghost Curse`.
 
-### BODY records (26 total)
+### BODY records (30 total)
 
 | Group | Count | Notes |
 |---|---|---|
 | Skin slots (neck → upper leg) | 20 | 10 slots × male + female → `ag\` paths |
 | Head | 2 | male + female → `ag\ag_head.nif` |
 | Hair | 2 | male + female → `ag\ag_hair.nif` |
+| First-person (`.1st`) | 4 | Chest + Hand × male + female → sleeves / hands |
 
 Each BODY: `NAME`, `MODL`, `FNAM` (`ancestor_ghost`), `BYDT`.
 
@@ -99,7 +104,8 @@ Each BODY: `NAME`, `MODL`, `FNAM` (`ancestor_ghost`), `BYDT`.
 
 Requires **OpenMW 0.51+** (`core.API_REVISION >= 67`).
 
-- `settings.lua` + `player.lua` — register mod settings page (player script only).
+- `settings.lua` + `player.lua` — register mod settings page (player script only); `onFrame` also drives `idle_pose`.
+- `idle_pose.lua` — third-person soft float (`idlespell` on torso+arms when unready); owns cancel so spell-stance IdleSpell is not restarted.
 - `balance.lua` / `player_settings.lua` — Ghostly Nature variant from player storage.
 - `undead_friendly_global.lua` — `onActorActive` + `world.activeActors`; sends `AG_PacifyUndead` / `AG_RestoreFight` (global cannot write AI fight stats in OpenMW 0.51).
 - `undead_creature.lua` — CREATURE local script; zeros Fight on `AG_PacifyUndead` (OpenMW equivalent of USkele’s per-ref `mobile.fight = 0`).
@@ -111,6 +117,12 @@ Racial **Ghost Curse** comes from RACE `NPCS` in the ESP; **Ghostly Nature** var
 
 ## Known limitations
 
-- Chest/hands use rigid Bip01 root (no finger flex / run bob on robe).
+- Ghost hand geometry is aligned to biped Hand bind pose (creature-pack style); flared sleeves may not meet the palms exactly.
+- Soft float uses vanilla IdleSpell on the upper body (third person only); not a custom mid-pose KF.
 - `Xbase_anim.1st.nif` affects all bipeds using that base anim when mod is loaded.
 - Equipment rules require Lua; not expressible in RACE alone.
+
+## Credits / provenance
+
+- **Playable Creature Race Pack** (Nexus) — BODY slot layout and bind-pose skinning reference for chest/hands (`tools/reference/`). Not a hard dependency; shipping textures and head are separate.
+- Vanilla Morrowind — Ancestor Ghost creature art, `Tx_LicheKing.dds`, biped anim groups (`idle` / `idlespell`).
