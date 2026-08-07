@@ -80,20 +80,22 @@ const AG_ARM = {
 const AG_NECK = { m: 'ag\\ag_neck.nif', f: 'ag\\ag_neck.nif' };
 const AG_GROIN = { m: 'ag\\ag_groin.nif', f: 'ag\\ag_groin.nif' };
 
-// Ghost torso + hands (Chest/Hand slots share ag_chest.nif like vanilla Skins.nif).
+// Ghost torso (weighted robe mesh from creature pack, deforms with animation).
 const AG_CHEST = { m: 'ag\\ag_chest.nif', f: 'ag\\ag_chest.nif' };
+// Ghost hands (bony lich-style hands, separate from chest).
+const AG_HAND = { m: 'ag\\ag_hand.nif', f: 'ag\\ag_hand.nif' };
 
 const AG_SKIN = {
   ...DUNMER_SKIN,
   Neck: AG_NECK,
   Groin: AG_GROIN,
   Chest: AG_CHEST,
-  Hand: AG_CHEST,
+  Hand: AG_HAND,
   ...AG_ARM,
   ...AG_LEG,
 };
 
-// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk; chest stays rigid).
+// Head: morpher ag_head.nif (Head-bone attach — NPC look-at / talk).
 const HEAD_VARIANTS = {
   m: ['ag\\ag_head.nif'],
   f: ['ag\\ag_head.nif'],
