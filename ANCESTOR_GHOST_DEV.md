@@ -124,5 +124,5 @@ Racial **Ghost Curse** comes from RACE `NPCS` in the ESP; **Ghostly Nature** var
 
 ## Credits / provenance
 
-- **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** — BODY slot layout and bind-pose skinning reference for chest/hands. Not a dependency; pack NIFs are not committed or shipped (local rebuild only — see `tools/reference/README.md`).
+- **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** — BODY slot layout and bind-pose skinning reference for chest/hands.
 - Vanilla Morrowind — Ancestor Ghost creature art, `Tx_LicheKing.dds`, biped anim groups (`idle` / `idlespell`).
