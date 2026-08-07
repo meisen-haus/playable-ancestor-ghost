@@ -17,7 +17,7 @@ playable-ancestor-ghost/
 │   ├── build_esp.mjs
 │   ├── build_invisible_stubs.py
 │   ├── build_invisible_1st_person.py
-│   ├── reference/              # Bind-pose skin refs (see reference/README.md)
+│   ├── reference/              # Credit + optional local skin refs (gitignored NIFs)
 │   └── blender/
 │       ├── ancestor_ghost.blend
 │       ├── build_vanilla_head_nif.py
@@ -124,5 +124,5 @@ Racial **Ghost Curse** comes from RACE `NPCS` in the ESP; **Ghostly Nature** var
 
 ## Credits / provenance
 
-- **Playable Creature Race Pack** (Nexus) — BODY slot layout and bind-pose skinning reference for chest/hands (`tools/reference/`). Not a hard dependency; shipping textures and head are separate.
+- **Playable Creature Race Pack** (Nexus) — BODY slot layout and bind-pose skinning reference for chest/hands. Not a dependency; pack NIFs are not committed or shipped (local rebuild only — see `tools/reference/README.md`).
 - Vanilla Morrowind — Ancestor Ghost creature art, `Tx_LicheKing.dds`, biped anim groups (`idle` / `idlespell`).

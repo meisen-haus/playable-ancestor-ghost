@@ -10,7 +10,6 @@ All notable changes to this project are documented here.
 
 - Soft **idle float** (`scripts/ancestor_ghost/idle_pose.lua`): third-person `idlespell` on torso + arms when unready so the robe does not bounce with walk; first person keeps default lower arms so magic-ready stays distinct
 - Separate **Hand** BODY meshes (`ag_hand.nif`) and first-person Chest/Hand `*.1st` BODY records
-- `tools/reference/` bind-pose skin refs + README (Playable Creature Race Pack as structural reference)
 
 ### Changed
 
@@ -21,9 +20,9 @@ All notable changes to this project are documented here.
 - Docs: PLAYERS / DEV / NIF / BODY_SLOTS updated for mesh pipeline, idle float, and provenance
 - Ghostly Nature **Levitate** magnitude **30**; in-game settings copy simplified (also on this branch)
 
-### Fixed
+### Credits
 
-- Magic-ready stance no longer ticks/restarts (soft-float must not `cancel` engine IdleSpell while stance is Spell)
+- Body slot layout and bind-pose skinning informed by the **Playable Creature Race Pack** (Nexus) as a structural reference — not redistributed; shipping textures and head are separate
 
 ## [0.2.0]
 

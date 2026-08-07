@@ -26,3 +26,6 @@ Meshes/ag/*with_alpha*
 Meshes/ag/*without_alpha*
 tools/reports/
 tools/blender/*.blend1
+
+# Optional local pack bind-pose copies (not redistributed; see tools/reference/README.md)
+tools/reference/*_skin_ref.nif

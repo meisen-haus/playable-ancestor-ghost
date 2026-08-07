@@ -107,8 +107,6 @@ Helmet, cuirass, greaves, boots, pauldrons, gauntlets, shirt, pants, skirt, robe
 
 **Arms hang straight / upper body bounces while walking:** Update to the latest release (weighted chest + `idle_pose` Lua). Restart OpenMW after replacing `Meshes/` and `scripts/`.
 
-**Magic-ready pose flickers or restarts:** Needs the fixed `idle_pose.lua` from this release (do not use an older scripts-only copy with new meshes).
-
 ## Lore
 
 Based on ancestral ghosts in Dunmer tombs: frost and poison immunity, ghost curse touch, and resistance to normal weapons (configurable). The playable body uses a biped rig with a ghost robe and head, not the floating creature mesh from vanilla.

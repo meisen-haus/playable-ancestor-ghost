@@ -18,7 +18,7 @@ All BODY records in `tools/build_esp.mjs` point at `Meshes/ag/` assets below.
 - BODY `ag_chest_{m,f}.1st` → `ag\ag_chest.nif` (full robe torso when looking down)
 - BODY `ag_hand_{m,f}.1st` → `ag\ag_hand.nif` (bony hands)
 
-Slot layout (separate Hand BODY, Chest `*.1st` sleeves) and bind-pose skinning follow the **Playable Creature Race Pack** as a structural reference (`tools/reference/`). Shipping chest/hand NIFs are written from those skin refs with our textures + float reweight; head is Blender-built from vanilla morpher geometry. See [tools/reference/README.md](reference/README.md).
+Slot layout (separate Hand BODY, Chest `*.1st` sleeves) and bind-pose skinning were informed by the **Playable Creature Race Pack** as a structural reference. Shipping `Meshes/ag/` NIFs are committed; optional local rebuild copies pack ghosts into gitignored `tools/reference/` (see [reference/README.md](reference/README.md)). Head is Blender-built from vanilla morpher geometry.
 
 ## Full mesh rebuild
 

@@ -36,7 +36,7 @@ Textures:
 
 ## Provenance
 
-Body NIFs use creature-pack **bind-pose skinning references** under `tools/reference/` (chest/arms/hand), with textures rewritten to our bundled tunic TGA and vanilla `Tx_LicheKing.dds`. Hanging vanilla-robe verts + biped Forearm weights caused classic sleeve stretch; the pack meshes are authored in biped arm bind pose so sleeves follow shoulder→wrist. Chest/arms builds also **fold Pelvis/Spine weights into Spine1/Spine2** so a Torso IdleSpell blend can float the robe while invisible legs walk. Head remains Blender-built from vanilla morpher geometry. Pack BODY layout (separate Hand, Chest `*.1st`) is also followed.
+Chest/hand rebuilds optionally pull bind-pose skinning from a local **Playable Creature Race Pack** install (copied into gitignored `tools/reference/`; see [tools/reference/README.md](tools/reference/README.md)). Textures are rewritten to our tunic TGA and vanilla `Tx_LicheKing.dds`. Hanging vanilla-robe verts + biped Forearm weights caused classic sleeve stretch; pack bind-pose sleeves follow shoulder→wrist. Builds also **fold Pelvis/Spine weights into Spine1/Spine2** for the idle-float Lua blend. Head remains Blender-built from vanilla morpher geometry. Pack BODY layout (separate Hand, Chest `*.1st`) is followed as a structural reference — pack NIFs are not committed or shipped.
 
 ## Tools (vendored in repo)
 
