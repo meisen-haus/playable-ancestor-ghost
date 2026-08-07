@@ -22,7 +22,7 @@ All notable changes to this project are documented here.
 
 ### Credits
 
-- Body slot layout and bind-pose skinning informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** as a structural reference — not redistributed; shipping textures and head are separate
+- Body slot layout and bind-pose skinning informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** as a structural reference — not redistributed; shipping textures and head are separate
 
 ## [0.2.0]
 

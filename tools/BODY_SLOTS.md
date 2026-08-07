@@ -18,7 +18,7 @@ All BODY records in `tools/build_esp.mjs` point at `Meshes/ag/` assets below.
 - BODY `ag_chest_{m,f}.1st` → `ag\ag_chest.nif` (full robe torso when looking down)
 - BODY `ag_hand_{m,f}.1st` → `ag\ag_hand.nif` (bony hands)
 
-Slot layout (separate Hand BODY, Chest `*.1st` sleeves) and bind-pose skinning were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** as a structural reference. Shipping `Meshes/ag/` NIFs are committed; optional local rebuild copies pack ghosts into gitignored `tools/reference/` (see [reference/README.md](reference/README.md)). Head is Blender-built from vanilla morpher geometry.
+Slot layout (separate Hand BODY, Chest `*.1st` sleeves) and bind-pose skinning were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** as a structural reference. Shipping `Meshes/ag/` NIFs are committed; optional local rebuild copies pack ghosts into gitignored `tools/reference/` (see [reference/README.md](reference/README.md)). Head is Blender-built from vanilla morpher geometry.
 
 ## Full mesh rebuild
 

@@ -8,7 +8,7 @@ Optional local NIF copies here are used only when re-running:
 blender --background --addons io_scene_mw tools/blender/ancestor_ghost.blend --python tools/blender/build_vanilla_chest_nif.py
 ```
 
-That script prefers a local install of **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** (see paths in `build_vanilla_chest_nif.py`), copies bind-pose ghosts into this folder, rewrites textures, applies the float reweight, and writes `Meshes/ag/`. The `*_skin_ref.nif` files are **gitignored** so pack geometry is not committed.
+That script prefers a local install of **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** (see paths in `build_vanilla_chest_nif.py`), copies bind-pose ghosts into this folder, rewrites textures, applies the float reweight, and writes `Meshes/ag/`. The `*_skin_ref.nif` files are **gitignored** so pack geometry is not committed.
 
 | Local file (gitignored) | Role |
 |-------------------------|------|
@@ -18,4 +18,4 @@ That script prefers a local install of **[Playable Creature Race Pack](https://w
 
 ## Provenance / credit
 
-Bind-pose skinning and BODY slot layout were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** — specifically the ghost meshes (`Ghost_chest.nif`, `Ghost_arms.nif`, `Ghost_Hand.nif`) — as a **structural reference** only. This mod does not depend on or redistribute that pack. Shipping tunic TGA, head mesh, and Lua idle-float are ours / vanilla.
+Bind-pose skinning and BODY slot layout were informed by **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** — specifically the ghost meshes (`Ghost_chest.nif`, `Ghost_arms.nif`, `Ghost_Hand.nif`) — as a **structural reference** only. This mod does not depend on or redistribute that pack. Shipping tunic TGA, head mesh, and Lua idle-float are ours / vanilla.

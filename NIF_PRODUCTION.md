@@ -36,7 +36,7 @@ Textures:
 
 ## Provenance
 
-Chest/hand rebuilds optionally pull bind-pose skinning from a local install of **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[Sheogorath101](https://www.nexusmods.com/morrowind/users/620544)** (copied into gitignored `tools/reference/`; see [tools/reference/README.md](tools/reference/README.md)). Textures are rewritten to our tunic TGA and vanilla `Tx_LicheKing.dds`. Hanging vanilla-robe verts + biped Forearm weights caused classic sleeve stretch; pack bind-pose sleeves follow shoulder→wrist. Builds also **fold Pelvis/Spine weights into Spine1/Spine2** for the idle-float Lua blend. Head remains Blender-built from vanilla morpher geometry. Pack BODY layout (separate Hand, Chest `*.1st`) is followed as a structural reference — pack NIFs are not committed or shipped.
+Chest/hand rebuilds optionally pull bind-pose skinning from a local install of **[Playable Creature Race Pack](https://www.nexusmods.com/morrowind/mods/45104)** by **[PsychoGherkin](https://www.nexusmods.com/profile/PsychoGherkin)** (copied into gitignored `tools/reference/`; see [tools/reference/README.md](tools/reference/README.md)). Textures are rewritten to our tunic TGA and vanilla `Tx_LicheKing.dds`. Hanging vanilla-robe verts + biped Forearm weights caused classic sleeve stretch; pack bind-pose sleeves follow shoulder→wrist. Builds also **fold Pelvis/Spine weights into Spine1/Spine2** for the idle-float Lua blend. Head remains Blender-built from vanilla morpher geometry. Pack BODY layout (separate Hand, Chest `*.1st`) is followed as a structural reference — pack NIFs are not committed or shipped.
 
 ## Tools (vendored in repo)
 
