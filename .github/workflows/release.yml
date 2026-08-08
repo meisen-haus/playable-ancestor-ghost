@@ -49,12 +49,17 @@ jobs:
           STAGING="dist/${MOD_DIR}"
           ZIP="dist/ancestor-ghost-${VERSION}.zip"
           mkdir -p "$STAGING"
-          cp ancestor_ghost.omwscripts ancestor_ghost.omwaddon README.md PLAYERS.md CHANGELOG.md LICENSE "$STAGING/"
+          # Runtime only — keep README/CHANGELOG/PLAYERS and other repo docs out of the install zip.
+          cp ancestor_ghost.omwscripts ancestor_ghost.omwaddon LICENSE "$STAGING/"
           cp -r scripts l10n Meshes Textures "$STAGING/"
           echo "=== Mod folder contents ==="
           find "$STAGING" -maxdepth 2 -type f | sort
           test -f "$STAGING/ancestor_ghost.omwscripts"
           test -f "$STAGING/ancestor_ghost.omwaddon"
+          test ! -e "$STAGING/README.md"
+          test ! -e "$STAGING/CHANGELOG.md"
+          test ! -e "$STAGING/PLAYERS.md"
+          test ! -e "$STAGING/ANCESTOR_GHOST_DEV.md"
           mkdir -p dist
           (cd dist && zip -rq "ancestor-ghost-${VERSION}.zip" "$MOD_DIR")
           unzip -l "$ZIP" | head -40
