@@ -27,7 +27,7 @@ playable-ancestor-ghost/
 
 Rebuild plugin only: `node tools/build_esp.mjs` → **26 BODY** + 17 SPEL + 1 RACE + 1 BSGN.
 
-**Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It rebuilds `ancestor_ghost.omwaddon` and attaches **one zip** (`ancestor-ghost-<tag>.zip`) containing the full mod folder (`ancestor-ghost/`: `.omwaddon`, `.omwscripts`, `scripts/`, `l10n/`, `Meshes/`, `Textures/`, docs). Manual test: Actions → Release build → Run workflow.
+**Releases:** publishing a GitHub release runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It rebuilds `ancestor_ghost.omwaddon` and attaches **one zip** (`ancestor-ghost-<tag>.zip`) containing the installable mod folder only (`ancestor-ghost/`: `.omwaddon`, `.omwscripts`, `scripts/`, `l10n/`, `Meshes/`, `Textures/`, `LICENSE` — no README/CHANGELOG/dev docs). Manual test: Actions → Release build → Run workflow.
 
 ## Mod settings (Options → Scripts → Ancestor Ghost)
 
